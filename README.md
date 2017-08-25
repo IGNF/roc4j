@@ -50,11 +50,11 @@ The second row in the equation above may be interpreted as a *classification sco
 
 The figure above provides an example of the result of operating a classifier, where green curve depicts the distribution of positive instances while red curve is the distribution of negative instances. We may see that the two distributions are rather well separated, which was not necessarily the case in the original input space $\mathcal{X}$. Of course, we shall note that these distributions are overlapping each other, and it might be difficult to label correctly an instance when its score is between, say $0.3$ and $0.7$. The size of the overlap region depends 1) on the discriminating power of the algorithm and 2) on the real separation of instances. For example, if we consider a case where data are hardly separable, we might end up with the scoring space representation below, on which we may observe that it will be very difficult to discriminate instances on a wide range of scores. For example, even with a confidence level of $80$%, only about two third of data seem to be actually positive instances. 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/intro2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/intro2.png)
+![](doc/images/intro2.png)
 
 On the opposite, we may consider the case where data have been very well separated by the classifier (possibly because the data were easily separable in their original space, or also because the classifier found a very discriminating projection space). This results in a small overlap area, and a reduced risk of making wrong predictions.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/intro3.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/intro3.png)
+![](doc/images/intro3.png)
 
 Now that we have understood how data are distributed in the scoring space, let us explain how predictions are made. We know that positive instances (green) are rather located on the right part of the scoring space (high scores) while negative instances (red) are mostly located on the other side. Of course positive and negative labels have completely symmetric roles, and they can be easily exchanged. 
 
@@ -78,7 +78,8 @@ However, FP and TP rates depend on the position of the treshold $t$, and as we m
 
 As a consequence, to a given threshold is associated an operating point (FPR, TPR), and plotting points resulting from all thresholds $t$ ($0 \leqslant t \leqslant 1$), would make a curve, that we call *Receiver Operating Characteristics* curve. We provide an example of ROC curve hereafter.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/horizontal.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/horizontal.png)
+![](doc/images/horizontal.png)
+![](doc/images/horizontal.png)
 
 
 More formally, we may observe that as being the fraction of area of the red curve which is located on the right part of the decision threshold $t$, FPR may be expressed as:
@@ -112,7 +113,7 @@ On the reverse, a perfect classifier will separate completely positive and negat
 As a general rule, the worst classifiers are close to the diagonal line, and the better a classifier is, the closer its ROC curve will get to the upper left corner, as depicted in the figure herafter, where blue classifier are much more performant than green ones.
 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/rainbow.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/rainbow.png)
+![](doc/images/rainbow.png)
 
 If a ROC curve is significantly below the diagonal line, then it means that it tends to associate positive output to negative instances and negative output to positive instances. By inversing output labels, we get a good classifier, and we are back to the standard situation. However, in order to be able to compare multiple classifiers performances, as a general rule, we would try to get all ROC curves in the upper part of the ROC space, even if this is to the expense of reversing output labels for some of the classifiers (of course, in such eventuality, reversing operation is performed for all instances used in the validation of a given classifier). 
 
@@ -120,7 +121,7 @@ We have seen previously that ROC curve are expressed as a combination of cumulat
 
 As an illustration, let us consider the following picture, depicting the ROC curves of 3 different models of classifiers, validated on a small dataset (2000 instances or so). The gap between curves is quite huge, but it can be assumed to be significant only after computing bands at 95% confidence level. This enables us to conclude that the green classifier achieves significantly better performance than its red and blue competitors. On a small dataset, such a conclusion would not be possible without uncertainty analysis.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multipleBandsConvex.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multipleBandsConvex.png)
+![](doc/images/multipleBandsConvex.png)
 
 Before going any further, we should clarify what a *small* dataset means. There is no global definition, and it depends on multiple factors, such as the significancy level required from the study, and the difference one expects to observe between different models of classifier. As a general rule, we will consider the uncertainty associated to a proportion (binomial distribution) at 95% level:
 
@@ -184,7 +185,7 @@ The above code generates $n$ instances, randomly chosen as positive (expected = 
 
 We provide hereafter a visual representation of the generated data, with green (resp red) curve depicting the score distribution of instances whose expected value is equal to $1$ (resp $0$).
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/simpleExample.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/simpleExample.png)
+![](doc/images/simpleExample.png)
 
 The vector *score* may be interpreted as a posterior probability vector $\mbox{score}[i] = \mathbb{P}[y_i=1|x_i]$. It is a classicial output for most classifiers, in addition to the raw decision $\hat{y}_i$.
 
@@ -211,7 +212,7 @@ fen.setVisible(true);
 ```
 Here is the final result:
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/final.png)](ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/final.png)
+![](doc/images/final.png)
 
 Note that *RocSpace* object has many attributes that can be parameterized to custom the plot. It is also possible to define its style directly through *RocSpaceStyle* object.
 
@@ -267,7 +268,7 @@ fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 fen.setVisible(true);
 
 ```
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/customized.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/customized.png)
+![](doc/images/customized.png)
 
 Given a ROC curve *roc*, it is possible to compute an *Area Under Curve* object which may be depicted in the ROC space.
 
@@ -293,7 +294,7 @@ $$\mathbb{P}[s_1 \leqslant s_2|y_1=0,y_2=1]$$
 
 For a perfect classifier, positive and negative instances are perfectly separated, hence the above probability is equal to 1, so should be the associated AUC.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/auc.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/auc.png)
+![](doc/images/auc.png)
 
 To be able to compute the uncertainty over Area Under Curve index, it is necessary to build *AreaUnderCurve* from a confidence bands (for further information, refer to next section: Advanced Functionalities).
 
@@ -425,13 +426,13 @@ where $\mathcal{N}(\mu_1, \sigma_1)$ and $\mathcal{N}(\mu_2, \sigma_2)$ represen
 
 The result of performing binormal regression on a ROC curve is provided below, where black dots depict the original raw curve, and red curve is obtained by least squares estimation of parameters $a$ and $b$.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/binormalSmoothing.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/binormalSmoothing.png)
+![](doc/images/binormalSmoothing.png)
 
 We may as well visualize what is happening in the scoring space. The next two graphics depict positive (green) and negative (red) instances distributions in the scoring space, before (up) and after (below) binormal regression. 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoring1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoring1.png)
+![](doc/images/scoring1.png)
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoring2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoring2.png)
+![](doc/images/scoring2.png)
 
 #####  Convexification
 
@@ -443,7 +444,7 @@ ReceiverOperatingCharacteristics.SMOOTH_CONVEXIFY
 
 Convexified ROC curve is depicted below in green (red curve being the original ROC). For a small number of data, convexified curve is most of the time much smoother than the scaled-appearance original curve.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/makeConvex.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/makeConvex.png)
+![](doc/images/makeConvex.png)
 
 Let us note that while the name of the method is CONVEXIFIED, the ROC curve function is actually properly speaking concave. This method makes the Area Under Curve convex.
 
@@ -502,7 +503,7 @@ If no kernel is provided, the computation is done with a default gaussian kernel
 
 The following picture depicts a ROC curve estimation through gaussian kernel estimation (black curve is the raw original method).
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/image_kernel_gaussian.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/image_kernel_gaussian.png)
+![](doc/images/image_kernel_gaussian.png)
 
 Let's see how to define a kernel function. There are two main ways:
 
@@ -582,11 +583,11 @@ Kernel uniform = new Kernel() {
 
 The use of different kernels for the estimation is depicted hereafter.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kernel_comparison_0.1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kernel_comparison_0.1.png)
+![](doc/images/kernel_comparison_0.1.png)
  
 We may also observe the effect of changing the bandwidth value for a given gaussian kernel. As we might have expected, the smaller the bandwidth, the less the curve is filtered and the more it looks like the raw computation output. On the reverse, larger bandwidths provide smoother curves. 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/bandwidth.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/bandwidth.png)
+![](doc/images/bandwidth.png)
 
 As a consequence, while it has been demonstrated that the choice of kernel model is not very critical (at least among the predefinite kernels), $h$ is a generalization-overfitting control parameter that must be chosen carefully. When the choice of a kernel is difficult, it is possible to use the automatic kernel:
 
@@ -596,11 +597,11 @@ roc.smooth(ReceiverOperatingCharacteristics.SMOOTH_KERNEL, new PredefiniteKernel
 
 In the following example, using AUTOMATIC kernel, resulted in two epanechnikov kernels (most efficient kernels) with a bandwidth $h^+ = 0.059$ for positive instances and $h^- = 0.079$ for negative instances. This would result in a slightly smoother estimation of the negative instances distribution, compared to positive instances distribution.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalKernel.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalKernel.png)
+![](doc/images/optimalKernel.png)
 
 The graphics below provides a comparison of the three smoothing methods available in roc4j:
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/smoothing4.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/smoothing4.png)
+![](doc/images/smoothing4.png)
 
 To conclude this section on ROC curve smoothing, let us note that smooth function exists in two different versions:
 
@@ -635,10 +636,10 @@ for(double h=0.01; h<=0.04; h+=0.001){
 
 The result of the above code is depicted below, with the top plot being the less filtered (smaller bandwidth) and the bottom plot being the most filtered (larger bandwidth).
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern1.png)
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern2.png)
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern3.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern3.png)
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern4.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/kern4.png)
+![](doc/images/kern1.png)
+![](doc/images/kern2.png)
+![](doc/images/kern3.png)
+![](doc/images/kern4.png)
 
 
 It is possible as well to return the scoring space as a *RocSpace* object, though it is not properly speaking a ROC space. 
@@ -659,9 +660,9 @@ By doing so, it is possible to benefit from all the plot  customization methods 
 
 Two examples of possible customization of scoring space are depicted below.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/explication.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/explication.png)
+![](doc/images/explication.png)
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoringSpace.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/scoringSpace.png)
+![](doc/images/scoringSpace.png)
 
 
 
@@ -762,7 +763,7 @@ fen.setLocationRelativeTo(null);
 fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 fen.setVisible(true);
 ```
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/default.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/default.png)
+![](doc/images/default.png)
 
 If we want to apply same method on a single ROC curve, it is required to change distribution to binomial:
 
@@ -770,7 +771,7 @@ If we want to apply same method on a single ROC curve, it is required to change 
 ConfidenceBands bands = new ConfidenceBands(ROCS.get(0), ConfidenceBands.METHOD_THRESHOLD_AVERAGING, 95.0, ConfidenceBands.DISTRIBUTION_BINOMIAL);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/TA-Binom.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/TA-Binom.png)
+![](doc/images/TA-Binom.png)
 
 We observe that as being calculated from a single ROC curve, the binomial confidence bands are much larger. When binomia distribution is specified, bands are computed theoretically from the number of examples passed through validation, i.e. the size of the vectore *expected* and *posteriors*. If the ROC curve has been directly built from TPR and FPR vectors, it is necessary to specify the numbers of instances used for the computation of the curve, before attempting to build confidence bands with binomial distibution. For example, with 200 positive instance and 100 negative instances:
 
@@ -800,9 +801,9 @@ ConfidenceBands bands = new ConfidenceBands(ROCS, ConfidenceBands.METHOD_FIXED_W
 Results are depicted below (Kolmogorov-Smirnov on top plot and Fixed-Width Band on bottom plot).
 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/ks5.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/ks5.png)
+![](doc/images/ks5.png)
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/fwb5.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/fwb5.png)
+![](doc/images/fwb5.png)
 
 Central ROC curve may be customized to get more complex results:
 
@@ -811,7 +812,7 @@ bands.getCentralROC().setThickness(3.f);
 bands.getCentralROC().setColor(ColorMap.TYPE_STANDARD);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/rainbow2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/rainbow2.png)
+![](doc/images/rainbow2.png)
 
 
 It is possible as well to replace the background filled confidence bands by error bars
@@ -823,7 +824,7 @@ bands.setErrorBarsVisible(true);
 bands.setErrorBarsResolution(0.02);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars4.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars4.png)
+![](doc/images/errorbars4.png)
 
 A special mode enables to get 'isolines'-like or 'heatmap'-like confidence bands.
 
@@ -847,10 +848,10 @@ space.addOperatingArea(AREAS);
  Both these commands enable to plot confidence bands from 1% confidence level to 99% confidence level (by step of 5%). Note that the pictures below do not correspond exactly to the command lines above.
 
 Isolines confidence bands
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isolines2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isolines2.png)
+![](doc/images/isolines2.png)
 
 Raster confidence bands	
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/raster.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/raster.png)	
+![](doc/images/raster.png)
 
 #####  Vertical Averaging
 
@@ -1201,7 +1202,7 @@ fen.setLocationRelativeTo(null);
 fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 fen.setVisible(true);
 ```
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/validation1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/validation1.png)
+![](doc/images/validation1.png)
 
 
 Multiple ROC curves may be also computed at the same time.
@@ -1220,7 +1221,7 @@ for (int i=0; i<ROCS.size(); i++){
 			
 }
 ```
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/validation2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/validation2.png)
+![](doc/images/validation2.png)
 
 The full code is provided hereafter.
 
@@ -1491,7 +1492,7 @@ The line is then added to a ROC space with the ad hoc command:
 space.addIsoCostLine(line);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc1.png)
+![](doc/images/isoc1.png)
 
 Each isoline as a specific cost, this cost is increasing as the isoline is close to the upper left part of the ROC space. To find the optimal point, we need to run an optimization algorithm:
 
@@ -1500,7 +1501,7 @@ line.optimize(roc);
 ```
 We may then call the plot again and visualize the optimal isocost line, i.e. the isocost line which contains the optimal point of the ROC curve.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc2.png)
+![](doc/images/isoc2.png)
 
 Note that the ROC curves in the two previous plots are slightly different.
 
@@ -1528,7 +1529,7 @@ space.writeText(t3, 150, 240, 15, Color.BLACK);
 space.writeText(t4, 150, 260, 15, Color.BLACK);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc3.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc3.png)
+![](doc/images/isoc3.png)
 
 Then it is possible to plot different optimal points for different contexts.
 
@@ -1538,7 +1539,7 @@ Context context = new Context(1, 1, 0, 0, 0.5, 0.5);
 
 Same cost on positive and negative false detection (no preference of FPR over TPR). The resulting operating lines has a 45° slope. Note that costs are comparables only for a single given context.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc4.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc4.png)
+![](doc/images/isoc4.png)
 
 ```java
 Context context = new Context(1, 1, 0, 0, 0.8, 0.2);
@@ -1546,11 +1547,11 @@ Context context = new Context(1, 1, 0, 0, 0.8, 0.2);
 
 Same cost on positive and negative false detection but significant imbalance of data in favor of positive instances. 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc5.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc5.png)
+![](doc/images/isoc5.png)
 
 We provide hereafter a plot depicting multiple isocost lines, including the optimal line.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc6.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc6.png)
+![](doc/images/isoc6.png)
 
 Another method to compute optimal point, is to use the class *OptimalLine* which compute the optimal operating point as an intersection with a line coming from upper left corner of the ROC space. Similarly to *IsoCostLine*, the slope of the line depends upon a specific context. 
 
@@ -1565,22 +1566,22 @@ space.addOptimalLine(line);
 space.addOperatingPoint(point);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc7.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/isoc7.png)
+![](doc/images/isoc7.png)
 
 The two following plots depict a multiple context lines on a customized ROC space plot (top) and an example of optimal point computation with results printed on the plot (bottom):
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalLines.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalLines.png)
+![](doc/images/optimalLines.png)
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalPoint.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/optimalPoint.png)
+![](doc/images/optimalPoint.png)
 
 ####  Special Multiple Export
 
 One of the main purposes of plotting ROC curves is to compare the respective performances of different models of classifiers. The roc4j library offers some flexibility to plot multiple ROC curves (and their associated confidence bands) in a unique ROC space. This is a very efficient metod for comparison, however not very scalable when the number of classifiers to compare increases. In practice, a maximum of 5 to 7 ROC curves (3 to 4 if associated with confidence bands) should be plotted in a single graphics. Accordingly, when there are too many classifier models, we must use functionalities to assemble multiple small plots in an image. This may be done with SVG extension, and the result should be similar to the images below.
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple.png)
+![](doc/images/multiple.png)
 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple2.png)
+![](doc/images/multiple2.png)
 
 Let us suppose that we have the function *generateData* (developped previously). We are going to try to compute a ROC curve for different level of noise.
 
@@ -1640,7 +1641,7 @@ SPACES.save(path, 500, 500);
 The result is depicted hereafter:
 
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple3.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/multiple3.png)
+![](doc/images/multiple3.png)
 
 
 ####  Additional Notes on Graphical Plots
@@ -1671,13 +1672,13 @@ space.addOperatingLine(line);
 space.addConfidenceBands(bands);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars1.png)
+![](doc/images/errorbars1.png)
 
 By specifying different symbols or different resolutions, we may obtain the following outputs:
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars2.png)
+![](doc/images/errorbars2.png)
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars3.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/errorbars3.png)
+![](doc/images/errorbars3.png)
 
 
 Real Application
@@ -1815,7 +1816,7 @@ fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 fen.setVisible(true);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/data_instances.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/data_instances.png)
+![](doc/images/data_instances.png)
 
 As a classifier, we will use Naive Bayes, which assumes independence between features, hence making the computation tractable.
 
@@ -1842,7 +1843,7 @@ ROC curve is then computed classically
 ReceiverOperatingCharacteristics roc = new ReceiverOperatingCharacteristics(Zv, posterior);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli1.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli1.png)
+![](doc/images/appli1.png)
 
 Confidence bands are then computed with Kolmogorov-Smirnov method and added to the ROC space.
 
@@ -1852,7 +1853,7 @@ ConfidenceBands bands = new ConfidenceBands(roc, ConfidenceBands.METHOD_KOLMOGOR
 space.addConfidenceBands(bands);
 ```
 
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli2.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli2.png)
+![](doc/images/appli2.png)
 
 The style of the ROC space is customized
 
@@ -1872,7 +1873,7 @@ space.setProjectionVisible(true);
 space.setProjectionAttachedToFpr(true);
 space.setThresholdVisible(true);
 ```
-[![](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli4.png)](ftp://ymeneroux:quequ4QueaGaiz9o@ftp2.ign.fr/roc4j/images/appli4.png)
+![](doc/images/appli4.png)
 
 
 
