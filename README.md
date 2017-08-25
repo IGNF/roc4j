@@ -1,6 +1,3 @@
-<script type="text/javascript"
-                src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-                </script>
 
 Handling ROC curves with roc4j
 ===================
@@ -25,9 +22,7 @@ This tutorial on roc4j main functionalities is organized as follows: the first p
 Theoretical Introduction
 -------------
 
-```math 
-a + b = c
-```
+![equation](http://latex.codecogs.com/gif.latex?Concentration%3D%5Cfrac%7BTotalTemplate%7D%7BTotalVolume%7D)
 
 In this section we will consider data as elements of $\mathcal{X} \times \mathcal{Y}$, where $\mathcal{X}$ denote the space of features (most of the time $\mathcal{X} \subset \mathbb{R}^d$ where $d$ is a given dimension), and $\mathcal{Y}$ is the output space. The goal of classifier, is to use a training dataset $\{(x_i,y_i)\}$ and to build a model to be able, given a new instance $x_{new}$ whose label $y_{new}$ is unknown, to infer the posterior probability of $y_{new}$ : $\mathbb{P}[y_{new}|x_{new}]$. Then, $y_{new}$ is inferred as :
 
