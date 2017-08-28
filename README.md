@@ -28,28 +28,30 @@ https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/fr/ign/cogit/roc
 
 Insert the following lines in your Maven pom.xml:
 
+In <dependencies>
+
 ```xml
 <dependency>
 	<groupId>fr.ign.cogit</groupId>
 	<artifactId>roc4j</artifactId>
 	<version>1.0-SNAPSHOT</version>
 </dependency>
-
-<repositories>
-	<repository>
-		<id>cogit-snapshots</id>
-		<name>Cogit Snapshots Repository</name>
-		<url>https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/</url>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-		<releases>
-			<enabled>false</enabled>
-		</releases>
-	</repository>
-</repositories>
 ```
 
+<repositories>
 
+```xml
+<repository>
+	<id>cogit-snapshots</id>
+	<name>Cogit Snapshots Repository</name>
+	<url>https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/</url>
+	<snapshots>
+		<enabled>true</enabled>
+	</snapshots>
+	<releases>
+		<enabled>false</enabled>
+	</releases>
+</repository>
+```
 
 
