@@ -11,16 +11,22 @@ The package roc4j is designed for estimating and handling Receiver Operating Cha
 - Validation process handler
 - Optimal operating points computation
 
+### Tutorial
+
 A complete tutorial on how to use roc4j may be found at the following address :
 
-### Installation:
+### Installation
 
-#### Option 1: download roc4j jar file at
+#### Option 1: 
+
+Download roc4j jar file at:
 
 https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/fr/ign/cogit/roc4j/1.0-SNAPSHOT/
 
 
-#### Option 2: insert the following lines in your Maven pom.xml
+#### Option 2: 
+
+Insert the following lines in your Maven pom.xml:
 
 ```xml
 <dependency>
