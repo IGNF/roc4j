@@ -28,7 +28,7 @@ https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/fr/ign/cogit/roc
 
 Insert the following lines in your Maven pom.xml:
 
-In <dependencies>
+In dependencies tag
 
 ```xml
 <dependency>
@@ -38,7 +38,7 @@ In <dependencies>
 </dependency>
 ```
 
-<repositories>
+In repositories tag
 
 ```xml
 <repository>
