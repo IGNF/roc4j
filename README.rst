@@ -22,6 +22,8 @@ This tutorial on roc4j main functionalities is organized as follows: the first p
 Theoretical Introduction
 -------------
 
+\\(a > 0\\)
+
 In this section we will consider data as elements of $\mathcal{X} \times \mathcal{Y}$, where $\mathcal{X}$ denote the space of features (most of the time $\mathcal{X} \subset \mathbb{R}^d$ where $d$ is a given dimension), and $\mathcal{Y}$ is the output space. The goal of classifier, is to use a training dataset $\{(x_i,y_i)\}$ and to build a model to be able, given a new instance $x_{new}$ whose label $y_{new}$ is unknown, to infer the posterior probability of $y_{new}$ : $\mathbb{P}[y_{new}|x_{new}]$. Then, $y_{new}$ is inferred as :
 
 $$\hat{y}_{new} = \underset{y \in \mathcal{Y}}{\mbox{argmax}}~\mathbb{P}[y~|~x_{new}]$$
