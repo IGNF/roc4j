@@ -1,0 +1,1320 @@
+<!-- --------------------------------------------------------------------------------------------- -->
+<!--         SCRIPT DE REPRESENTATION DU CIRCUIT, DE L'INFRASTRUCTURE ET DES TRACES GPS            -->
+<!-- --------------------------------------------------------------------------------------------- -->
+<!-- Nécessite le répertoire de logos (images) ainsi que les scripts Javascript de chargement des  -->
+<!-- données (load_data.js). La fonction représente : le circuit, les feux tricolores, les stops,  -->
+<!-- les passages piétons et les dos d'âne. Par défaut, la visualisation des passages piétons      -->
+<!-- n'est pas activée. Des informations attributaires peuvent être obtenues en cliquant sur les   -->
+<!-- marqueurs. Lorsque le niveau de zoom est élevé, la vue bascule par défaut en mode oblique     -->
+<!-- entraînant ainsi des erreurs de positionnement au niveau de la visualisation des marqueurs.   -->
+<!-- Pour controler le positionnement des éléments de l'infrastructure à haut niveau de zoom, il   -->
+<!-- est préférable de repasser en vue verticale (icône en bas à droite de l'écran).			   -->
+<!-- Nécessite la librairie Java Script SweetAlert : t4t5.github.io/sweetalert/                    -->
+<!-- --------------------------------------------------------------------------------------------- -->
+
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+	
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+		<meta charset="UTF-8" />
+		<title>Circuit Versailles</title>
+		
+		<!-- Style -->
+		<style type="text/css">
+			html {
+				height: 100%
+			}
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0
+				
+			}
+			#panel { 
+				background-color: 
+				#DDD; 
+				position:absolute; 
+				top:0; 
+				left:0; 
+				bottom:0; 
+				width:200px;
+				overflow: auto;				
+			}
+			#EmplacementDeMaCarte { 
+				position:absolute; 
+				top:0; left:200px; 
+				right:0; 
+				bottom:0; 
+			}
+			hr.style13 {
+				height: 10px;
+				border: 0;
+				box-shadow: 0 10px 10px -10px #8c8b8b inset;
+			}
+			hr.style11 {
+				height: 6px;
+				background: url(http://ibrahimjabbari.com/english/images/hr-11.png) repeat-x 0 0;
+				border: 0;
+			}
+			.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s
+}
+
+.sidenav a:hover, .offcanvas a:focus{
+    color: #f1f1f1;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+#main {
+    transition: margin-left .5s;
+    padding: 16px;
+}
+
+		</style>
+		
+		<!-- Chargement des progress bar -->
+		<script type="text/javascript" src="data/lib/pace/pace.js"></script>
+		<link rel="stylesheet" href="data/lib/pace/pace.css">
+		
+		<!-- Chargement des messages d'informations -->
+		<script src="data/lib/sweetalert-master/dist/sweetalert-dev.js"></script>
+		<link rel="stylesheet" href="data/lib/sweetalert-master/dist/sweetalert.css">
+		
+		<!-- Chargement de l'API Google Maps -->
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+		<!-- Chargement des données d'infrastructure -->
+		<script type="text/javascript" src="data/data/load_data_infra.js"></script>
+		
+		<!-- Chargement des données gps -->
+		<script type="text/javascript" src="data/data/load_data_gps.js"></script>
+		
+	
+		<div id="mySidenav" class="sidenav">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<a href="#">About</a>
+			<a href="http://www.ign.fr/"  target=_blank>IGN</a>
+			<a href="http://recherche.ign.fr/labos/cogit/accueilCOGIT.php" target=_blank>COGIT</a>
+			<a href="http://www.ifsttar.fr/accueil/" target=_blank>IFSTTAR</a>
+			<a href="data/circuit2.htm">Circuit II</a>
+			<a href="http://recherche.ign.fr/labos/cogit/cv.php?prenom=Yann&nom=Meneroux" target=_blank>Contact</a>
+			</div>
+
+
+		
+		<!--  --------------------------------------- -->
+		<!--  Script principal  					  -->
+		<!--  --------------------------------------- -->
+		<script type="text/javascript">
+		
+	
+		function openNav() {
+			document.getElementById("mySidenav").style.width = "250px";
+			document.getElementById("main").style.marginLeft = "250px";
+		}
+
+		function closeNav() {
+			document.getElementById("mySidenav").style.width = "0";
+			document.getElementById("main").style.marginLeft= "0";
+		}
+
+
+		
+		
+			// Tables d'objets
+			var TAB_STOP = [];
+			var TAB_PP = [];
+			var TAB_BUMP = [];
+			var TAB_FEU = [];
+			
+			var flightPath1; var flightPath2; var flightPath3; var flightPath4; var flightPath5; var flightPath6; var flightPath7; var flightPath8; var flightPath9; var flightPath10;
+			var flightPath11; var flightPath12; var flightPath3; var flightPath14; var flightPath15; var flightPath16; var flightPath17; var flightPath18; var flightPath19; var flightPath20;
+			var flightPath21; var flightPath22; var flightPath3; var flightPath24; var flightPath25; var flightPath26; var flightPath27; var flightPath28; var flightPath29; var flightPath30;
+			var flightPath31; var flightPath32; var flightPath3; var flightPath34; var flightPath35; var flightPath36; var flightPath37; var flightPath38; var flightPath39; var flightPath40;
+			var flightPath41; var flightPath42; var flightPath3; var flightPath44; var flightPath45; var flightPath46; var flightPath47; var flightPath48; var flightPath49; var flightPath50;
+			var flightPath51; var flightPath52; var flightPath53; var flightPath54; var flightPath55; var flightPath56; var flightPath57; var flightPath58; var flightPath59; var flightPath60;
+			var flightPath61; var flightPath62; var flightPath63; var flightPath64; var flightPath65; var flightPath66; var flightPath67; var flightPath68; var flightPath69; var flightPath70;
+			var flightPath71; var flightPath72; var flightPath73; var flightPath74; var flightPath75; var flightPath76; var flightPath77; var flightPath78; var flightPath79; var flightPath80;
+			var flightPath81; var flightPath82; var flightPath83; var flightPath84; var flightPath85; var flightPath86; var flightPath87; var flightPath88; var flightPath89; var flightPath90;
+			var flightPath91; var flightPath92; var flightPath93; var flightPath94; var flightPath95; var flightPath96; var flightPath97; var flightPath98; var flightPath99; var flightPath100;
+			var flightPath101; var flightPath102; var flightPath103; var flightPath104; var flightPath105; var flightPath106; var flightPath107; var flightPath108; var flightPath109; var flightPath110;
+			var flightPath111; var flightPath112; var flightPath113; var flightPath114; var flightPath115; var flightPath116; var flightPath117; var flightPath118; var flightPath119; var flightPath120;
+			var flightPath121; var flightPath122; var flightPath123; var flightPath124; var flightPath125; var flightPath126; var flightPath127; var flightPath128; var flightPath129; var flightPath130;
+			var flightPath131; var flightPath132; var flightPath133; var flightPath134; var flightPath135; var flightPath136; var flightPath137; var flightPath138; var flightPath139; var flightPath140;
+			var flightPath141; var flightPath142; var flightPath143; var flightPath144; var flightPath145; var flightPath146; 
+			
+			
+			var TABCODES=["C01-1","C01-2","C01-3","C01-4","C01-5","C02-1","C02-2","C02-3","C02-4","C02-5","C03-1","C03-2","C03-3","C03-4","C03-5","C04-1","C04-2","C04-3","C04-4","C04-5","C05-1","C06-1","C06-2","C06-3","C06-4","C06-5","C07-1","C07-2","C07-3","C07-4","C07-5","C08-1","C09-1","C10-1","C10-2","C10-3","C10-4","C10-5","C11-1","C11-2","C11-3","C11-4","C11-5","C12-1","C12-2","C12-3","C12-4","C12-5","C13-1","C13-2","C13-3","C13-4","C13-5","C14-1","C14-2","C14-3","C14-4","C14-5","C15-1","C15-2","C15-3","C15-4","C15-5","C16-1","C16-2","C16-3","C16-4","C16-5","C17-1","C17-2","C17-3","C17-4","C17-5","C18-1","C18-2","C18-3","C18-4","C18-5","C19-1","C19-2","C19-3","C20-1","C20-2","C20-3","C20-4","C20-5","N21-1","N21-2","N21-3","N21-4","N21-5","N21-6","N22-1","N22-2","N22-3","N22-4","N22-5","N22-6","N23-1","N23-2","N23-3","N23-4","N23-5","N23-6","N24-1","N24-2","N24-3","N24-4","N24-5","N24-6","N25-1","N25-2","N25-3","N25-4","N25-5","N25-6","N26-1","N26-2","N26-3","N26-4","N26-5","N26-6","N27-1","N27-2","N27-3","N27-4","N27-5","N27-6","N28-1","N28-2","N28-3","N28-4","N28-5","N28-6","N29-1","N29-2","N29-3","N29-4","N29-5","N29-6","N30-1","N30-2","N30-3","N30-4","N30-5","N30-6"];
+			
+			var circuitPath;
+	
+			var maCarte;
+			
+			var rc = false;
+			
+			function getRandomColor(x) {
+			
+				var color = '#ff0000';
+			
+				if (x){
+					var letters = '0123456789ABCDEF';
+					color = '#';
+					for (var i = 0; i < 6; i++ ) {
+						color += letters[Math.floor(Math.random() * 16)];
+					}
+				}	
+			
+				return color;
+			}
+			
+		
+			// ---------------------------------------
+			// Initialistion carte
+			// ---------------------------------------
+			function initialisation(){
+				var centreCarte = new google.maps.LatLng(48.797514,2.113028);
+				var optionsCarte = {
+					zoom: 14,
+					center: centreCarte,
+					mapTypeId: google.maps.MapTypeId.SATELLITE
+				}
+				
+				
+				// Définition des logos
+				var image_stop = 'data/images/stop.png';
+				var image_traffic_lights = 'data/images/feu.png';
+				var image_speedbump = 'data/images/speedbump.png';
+				var image_pedestrian = 'data/images/pietons.png';
+				var image_recal = 'data/images/recal.png';
+				
+				// Définition des images grand format
+				var image_stop_gf = 'data/images/stop_gdformat.png';
+				var image_traffic_lights_gf = 'data/images/feu_gdformat.png';
+				var image_speedbump_gf = 'data/images/speedbump_gdformat.png';
+				var image_pedestrian_gf = 'data/images/pietons_gdformat.png';
+
+				// Initialisation
+				maCarte = new google.maps.Map(document.getElementById("EmplacementDeMaCarte"), optionsCarte);
+				
+				// Liste des marqueurs de passages piétons
+				for (k=0; k<TAB_LONG_PP.length; k++){
+				
+					TAB_PP.push(new google.maps.Marker({position: new google.maps.LatLng(TAB_LAT_PP[k], TAB_LONG_PP[k]), map: maCarte,title: TAB_NSEQ_STOP+" "+" ", icon: image_pedestrian})); 
+					
+					TAB_PP[k].id = k;
+					TAB_PP[k].addListener('click', function() { 
+						k = this.id;
+						swal({
+							title:"Infos sur l'élément",
+							text:"Elément de type : stop\r\n \r\n Numéro de passage piétons : "+(k+1)+"\r\n Numéro dans la séquence : "+TAB_NSEQ_PP[k]+"\r\n \r\n Longitude  =  "+TAB_LONG_PP[k]+" °\r\n Latitude  =  "+TAB_LAT_PP[k]+ "°\r\n"+"\r\n X Lambert 93  =  "+Math.round(100*TAB_X_PP[k])/100+" m\r\n Y Lambert 93  =  "+Math.round(100*TAB_Y_PP[k])/100+ " m\r\n \r\n Abscisse curviligne =  "+Math.round(100*TAB_ABS_PP[k])/100+" m\r\n",
+							imageUrl:image_pedestrian_gf
+						});
+						
+					});
+					
+				}
+				
+				// Liste des marqueurs de dos d'âne
+				for (k=0; k<TAB_LONG_BUMP.length; k++){
+
+					TAB_BUMP.push(new google.maps.Marker({position: new google.maps.LatLng(TAB_LAT_BUMP[k], TAB_LONG_BUMP[k]), map: maCarte,title: TAB_NSEQ_STOP+" "+" ", icon: image_speedbump})); 
+					
+					TAB_BUMP[k].id = k;
+					TAB_BUMP[k].addListener('click', function() {
+						k = this.id;
+						swal({
+							title:"Infos sur l'élément",
+							text: "Elément de type : dos d'âne\r\n \r\n Numéro de dos d'âne : "+(k+1)+"\r\n Numéro dans la séquence : "+TAB_NSEQ_BUMP[k]+"\r\n \r\n Longitude  =  "+TAB_LONG_BUMP[k]+" °\r\n Latitude  =  "+TAB_LAT_BUMP[k]+ "°\r\n"+"\r\n X Lambert 93  =  "+Math.round(100*TAB_X_BUMP[k])/100+" m\r\n Y Lambert 93  =  "+Math.round(100*TAB_Y_BUMP[k])/100+ " m\r\n \r\n Abscisse curviligne =  "+Math.round(100*TAB_ABS_BUMP[k])/100+" m\r\n",
+							imageUrl: image_speedbump_gf
+						});
+			
+					});
+					
+				}
+			
+				// Liste des marqueurs de stops
+				for (k=0; k<TAB_LONG_STOP.length; k++){
+					
+					TAB_STOP.push(new google.maps.Marker({position: new google.maps.LatLng(TAB_LAT_STOP[k], TAB_LONG_STOP[k]), map: maCarte,title: TAB_NSEQ_STOP+" ", icon: image_stop})); 
+					
+					TAB_STOP[k].id = k;
+					TAB_STOP[k].addListener('click', function(){
+						k = this.id;	
+						swal({
+							title:"Infos sur l'élément",
+							text:"Elément de type : stop\r\n \r\n Numéro de stop : "+(k+1)+"\r\n Numéro dans la séquence : "+TAB_NSEQ_STOP[k]+"\r\n \r\n Longitude  =  "+TAB_LONG_STOP[k]+" °\r\n Latitude  =  "+TAB_LAT_STOP[k]+ "°\r\n"+"\r\n X Lambert 93  =  "+Math.round(100*TAB_X_STOP[k])/100+" m\r\n Y Lambert 93  =  "+Math.round(100*TAB_Y_STOP[k])/100+ " m\r\n \r\n Abscisse curviligne =  "+Math.round(100*TAB_ABS_STOP[k])/100+" m\r\n",					
+							imageUrl: image_stop_gf
+						});
+							
+					});
+					
+				}
+			
+				// Liste des marqueurs de feux tricolores
+				for (k=0; k<TAB_LONG_FEU.length; k++){
+				
+					TAB_FEU.push(new google.maps.Marker({position: new google.maps.LatLng(TAB_LAT_FEU[k], TAB_LONG_FEU[k]), map: maCarte,title: TAB_NSEQ_STOP+" ", icon: image_traffic_lights})); 
+					
+					TAB_FEU[k].id = k;
+					TAB_FEU[k].addListener('click', function() { 
+						k = this.id;
+						
+						swal({
+							title: "Infos sur l'élément",
+							text: "Elément de type : feu tricolore\r\n \r\n Numéro de feu tricolore : "+(k+1)+"\r\n Numéro dans la séquence : "+TAB_NSEQ_FEU[k]+"\r\n \r\n Longitude  =  "+TAB_LONG_FEU[k]+" °\r\n Latitude  =  "+TAB_LAT_FEU[k]+ "°\r\n"+"\r\n X Lambert 93  =  "+Math.round(100*TAB_X_FEU[k])/100+" m\r\n Y Lambert 93  =  "+Math.round(100*TAB_Y_FEU[k])/100+ " m\r\n \r\n Abscisse curviligne =  "+Math.round(100*TAB_ABS_FEU[k])/100+" m\r\n",
+							imageUrl: image_traffic_lights_gf
+						});
+						   
+						   
+					});
+					
+				}		
+		
+				
+					
+				// Représentation des tracés
+				flightPath1 = new google.maps.Polyline({path: flightPlanCoordinates1,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath1.setMap(maCarte);
+				flightPath2 = new google.maps.Polyline({path: flightPlanCoordinates2,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath2.setMap(maCarte);
+				flightPath3 = new google.maps.Polyline({path: flightPlanCoordinates3,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath3.setMap(maCarte);
+				flightPath4 = new google.maps.Polyline({path: flightPlanCoordinates4,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath4.setMap(maCarte);
+				flightPath5 = new google.maps.Polyline({path: flightPlanCoordinates5,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath5.setMap(maCarte);
+				flightPath6 = new google.maps.Polyline({path: flightPlanCoordinates6,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath6.setMap(maCarte);
+				flightPath7 = new google.maps.Polyline({path: flightPlanCoordinates7,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath7.setMap(maCarte);
+				flightPath8 = new google.maps.Polyline({path: flightPlanCoordinates8,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath8.setMap(maCarte);
+				flightPath9 = new google.maps.Polyline({path: flightPlanCoordinates9,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath9.setMap(maCarte);
+				flightPath10 = new google.maps.Polyline({path: flightPlanCoordinates10,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath10.setMap(maCarte);
+				flightPath11 = new google.maps.Polyline({path: flightPlanCoordinates11,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath11.setMap(maCarte);
+				flightPath12 = new google.maps.Polyline({path: flightPlanCoordinates12,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath12.setMap(maCarte);
+				flightPath13 = new google.maps.Polyline({path: flightPlanCoordinates13,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath13.setMap(maCarte);
+				flightPath14 = new google.maps.Polyline({path: flightPlanCoordinates14,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath14.setMap(maCarte);
+				flightPath15 = new google.maps.Polyline({path: flightPlanCoordinates15,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath15.setMap(maCarte);
+				flightPath16 = new google.maps.Polyline({path: flightPlanCoordinates16,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath16.setMap(maCarte);
+				flightPath17 = new google.maps.Polyline({path: flightPlanCoordinates17,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath17.setMap(maCarte);
+				flightPath18 = new google.maps.Polyline({path: flightPlanCoordinates18,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath18.setMap(maCarte);
+				flightPath19 = new google.maps.Polyline({path: flightPlanCoordinates19,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath19.setMap(maCarte);
+				flightPath20 = new google.maps.Polyline({path: flightPlanCoordinates20,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath20.setMap(maCarte);
+				flightPath21 = new google.maps.Polyline({path: flightPlanCoordinates21,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath21.setMap(maCarte);
+				flightPath22 = new google.maps.Polyline({path: flightPlanCoordinates22,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath22.setMap(maCarte);
+				flightPath23 = new google.maps.Polyline({path: flightPlanCoordinates23,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath23.setMap(maCarte);
+				flightPath24 = new google.maps.Polyline({path: flightPlanCoordinates24,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath24.setMap(maCarte);
+				flightPath25 = new google.maps.Polyline({path: flightPlanCoordinates25,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath25.setMap(maCarte);
+				flightPath26 = new google.maps.Polyline({path: flightPlanCoordinates26,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath26.setMap(maCarte);
+				flightPath27 = new google.maps.Polyline({path: flightPlanCoordinates27,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath27.setMap(maCarte);
+				flightPath28 = new google.maps.Polyline({path: flightPlanCoordinates28,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath28.setMap(maCarte);
+				flightPath29 = new google.maps.Polyline({path: flightPlanCoordinates29,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath29.setMap(maCarte);
+				flightPath30 = new google.maps.Polyline({path: flightPlanCoordinates30,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath30.setMap(maCarte);
+				flightPath31 = new google.maps.Polyline({path: flightPlanCoordinates31,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath31.setMap(maCarte);
+				flightPath32 = new google.maps.Polyline({path: flightPlanCoordinates32,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath32.setMap(maCarte);
+				flightPath33 = new google.maps.Polyline({path: flightPlanCoordinates33,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath33.setMap(maCarte);
+				flightPath34 = new google.maps.Polyline({path: flightPlanCoordinates34,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath34.setMap(maCarte);
+				flightPath35 = new google.maps.Polyline({path: flightPlanCoordinates35,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath35.setMap(maCarte);
+				flightPath36 = new google.maps.Polyline({path: flightPlanCoordinates36,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath36.setMap(maCarte);
+				flightPath37 = new google.maps.Polyline({path: flightPlanCoordinates37,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath37.setMap(maCarte);
+				flightPath38 = new google.maps.Polyline({path: flightPlanCoordinates38,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath38.setMap(maCarte);
+				flightPath39 = new google.maps.Polyline({path: flightPlanCoordinates39,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath39.setMap(maCarte);
+				flightPath40 = new google.maps.Polyline({path: flightPlanCoordinates40,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath40.setMap(maCarte);
+				flightPath41 = new google.maps.Polyline({path: flightPlanCoordinates41,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath41.setMap(maCarte);
+				flightPath42 = new google.maps.Polyline({path: flightPlanCoordinates42,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath42.setMap(maCarte);
+				flightPath43 = new google.maps.Polyline({path: flightPlanCoordinates43,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath43.setMap(maCarte);
+				flightPath44 = new google.maps.Polyline({path: flightPlanCoordinates44,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath44.setMap(maCarte);
+				flightPath45 = new google.maps.Polyline({path: flightPlanCoordinates45,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath45.setMap(maCarte);
+				flightPath46 = new google.maps.Polyline({path: flightPlanCoordinates46,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath46.setMap(maCarte);
+				flightPath47 = new google.maps.Polyline({path: flightPlanCoordinates47,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath47.setMap(maCarte);
+				flightPath48 = new google.maps.Polyline({path: flightPlanCoordinates48,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath48.setMap(maCarte);
+				flightPath49 = new google.maps.Polyline({path: flightPlanCoordinates49,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath49.setMap(maCarte);
+				flightPath50 = new google.maps.Polyline({path: flightPlanCoordinates50,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath50.setMap(maCarte);
+				flightPath51 = new google.maps.Polyline({path: flightPlanCoordinates51,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath51.setMap(maCarte);
+				flightPath52 = new google.maps.Polyline({path: flightPlanCoordinates52,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath52.setMap(maCarte);
+				flightPath53 = new google.maps.Polyline({path: flightPlanCoordinates53,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath53.setMap(maCarte);
+				flightPath54 = new google.maps.Polyline({path: flightPlanCoordinates54,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath54.setMap(maCarte);
+				flightPath55 = new google.maps.Polyline({path: flightPlanCoordinates55,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath55.setMap(maCarte);
+				flightPath56 = new google.maps.Polyline({path: flightPlanCoordinates56,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath56.setMap(maCarte);
+				flightPath57 = new google.maps.Polyline({path: flightPlanCoordinates57,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath57.setMap(maCarte);
+				flightPath58 = new google.maps.Polyline({path: flightPlanCoordinates58,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath58.setMap(maCarte);
+				flightPath59 = new google.maps.Polyline({path: flightPlanCoordinates59,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath59.setMap(maCarte);
+				flightPath60 = new google.maps.Polyline({path: flightPlanCoordinates60,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath60.setMap(maCarte);
+				flightPath61 = new google.maps.Polyline({path: flightPlanCoordinates61,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath61.setMap(maCarte);
+				flightPath62 = new google.maps.Polyline({path: flightPlanCoordinates62,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath62.setMap(maCarte);
+				flightPath63 = new google.maps.Polyline({path: flightPlanCoordinates63,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath63.setMap(maCarte);
+				flightPath64 = new google.maps.Polyline({path: flightPlanCoordinates64,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath64.setMap(maCarte);
+				flightPath65 = new google.maps.Polyline({path: flightPlanCoordinates65,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath65.setMap(maCarte);
+				flightPath66 = new google.maps.Polyline({path: flightPlanCoordinates66,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath66.setMap(maCarte);
+				flightPath67 = new google.maps.Polyline({path: flightPlanCoordinates67,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath67.setMap(maCarte);
+				flightPath68 = new google.maps.Polyline({path: flightPlanCoordinates68,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath68.setMap(maCarte);
+				flightPath69 = new google.maps.Polyline({path: flightPlanCoordinates69,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath69.setMap(maCarte);
+				flightPath70 = new google.maps.Polyline({path: flightPlanCoordinates70,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath70.setMap(maCarte);
+				flightPath71 = new google.maps.Polyline({path: flightPlanCoordinates71,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath71.setMap(maCarte);
+				flightPath72 = new google.maps.Polyline({path: flightPlanCoordinates72,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath72.setMap(maCarte);
+				flightPath73 = new google.maps.Polyline({path: flightPlanCoordinates73,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath73.setMap(maCarte);
+				flightPath74 = new google.maps.Polyline({path: flightPlanCoordinates74,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath74.setMap(maCarte);
+				flightPath75 = new google.maps.Polyline({path: flightPlanCoordinates75,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath75.setMap(maCarte);
+				flightPath76 = new google.maps.Polyline({path: flightPlanCoordinates76,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath76.setMap(maCarte);
+				flightPath77 = new google.maps.Polyline({path: flightPlanCoordinates77,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath77.setMap(maCarte);
+				flightPath78 = new google.maps.Polyline({path: flightPlanCoordinates78,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath78.setMap(maCarte);
+				flightPath79 = new google.maps.Polyline({path: flightPlanCoordinates79,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath79.setMap(maCarte);
+				flightPath80 = new google.maps.Polyline({path: flightPlanCoordinates80,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath80.setMap(maCarte);
+				flightPath81 = new google.maps.Polyline({path: flightPlanCoordinates81,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath81.setMap(maCarte);
+				flightPath82 = new google.maps.Polyline({path: flightPlanCoordinates82,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath82.setMap(maCarte);
+				flightPath83 = new google.maps.Polyline({path: flightPlanCoordinates83,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath83.setMap(maCarte);
+				flightPath84 = new google.maps.Polyline({path: flightPlanCoordinates84,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath84.setMap(maCarte);
+				flightPath85 = new google.maps.Polyline({path: flightPlanCoordinates85,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath85.setMap(maCarte);
+				flightPath86 = new google.maps.Polyline({path: flightPlanCoordinates86,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath86.setMap(maCarte);
+				flightPath87 = new google.maps.Polyline({path: flightPlanCoordinates87,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath87.setMap(maCarte);
+				flightPath88 = new google.maps.Polyline({path: flightPlanCoordinates88,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath88.setMap(maCarte);
+				flightPath89 = new google.maps.Polyline({path: flightPlanCoordinates89,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath89.setMap(maCarte);
+				flightPath90 = new google.maps.Polyline({path: flightPlanCoordinates90,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath90.setMap(maCarte);
+				flightPath91 = new google.maps.Polyline({path: flightPlanCoordinates91,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath91.setMap(maCarte);
+				flightPath92 = new google.maps.Polyline({path: flightPlanCoordinates92,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath92.setMap(maCarte);
+				flightPath93 = new google.maps.Polyline({path: flightPlanCoordinates93,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath93.setMap(maCarte);
+				flightPath94 = new google.maps.Polyline({path: flightPlanCoordinates94,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath94.setMap(maCarte);
+				flightPath95 = new google.maps.Polyline({path: flightPlanCoordinates95,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath95.setMap(maCarte);
+				flightPath96 = new google.maps.Polyline({path: flightPlanCoordinates96,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath96.setMap(maCarte);
+				flightPath97 = new google.maps.Polyline({path: flightPlanCoordinates97,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath97.setMap(maCarte);
+				flightPath98 = new google.maps.Polyline({path: flightPlanCoordinates98,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath98.setMap(maCarte);
+				flightPath99 = new google.maps.Polyline({path: flightPlanCoordinates99,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath99.setMap(maCarte);
+				flightPath100 = new google.maps.Polyline({path: flightPlanCoordinates100,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath100.setMap(maCarte);
+				flightPath101 = new google.maps.Polyline({path: flightPlanCoordinates101,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath101.setMap(maCarte);
+				flightPath102 = new google.maps.Polyline({path: flightPlanCoordinates102,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath102.setMap(maCarte);
+				flightPath103 = new google.maps.Polyline({path: flightPlanCoordinates103,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath103.setMap(maCarte);
+				flightPath104 = new google.maps.Polyline({path: flightPlanCoordinates104,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath104.setMap(maCarte);
+				flightPath105 = new google.maps.Polyline({path: flightPlanCoordinates105,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath105.setMap(maCarte);
+				flightPath106 = new google.maps.Polyline({path: flightPlanCoordinates106,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath106.setMap(maCarte);
+				flightPath107 = new google.maps.Polyline({path: flightPlanCoordinates107,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath107.setMap(maCarte);
+				flightPath108 = new google.maps.Polyline({path: flightPlanCoordinates108,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath108.setMap(maCarte);
+				flightPath109 = new google.maps.Polyline({path: flightPlanCoordinates109,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath109.setMap(maCarte);
+				flightPath110 = new google.maps.Polyline({path: flightPlanCoordinates110,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath110.setMap(maCarte);
+				flightPath111 = new google.maps.Polyline({path: flightPlanCoordinates111,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath111.setMap(maCarte);
+				flightPath112 = new google.maps.Polyline({path: flightPlanCoordinates112,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath112.setMap(maCarte);
+				flightPath113 = new google.maps.Polyline({path: flightPlanCoordinates113,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath113.setMap(maCarte);
+				flightPath114 = new google.maps.Polyline({path: flightPlanCoordinates114,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath114.setMap(maCarte);
+				flightPath115 = new google.maps.Polyline({path: flightPlanCoordinates115,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath115.setMap(maCarte);
+				flightPath116 = new google.maps.Polyline({path: flightPlanCoordinates116,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath116.setMap(maCarte);
+				flightPath117 = new google.maps.Polyline({path: flightPlanCoordinates117,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath117.setMap(maCarte);
+				flightPath118 = new google.maps.Polyline({path: flightPlanCoordinates118,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath118.setMap(maCarte);
+				flightPath119 = new google.maps.Polyline({path: flightPlanCoordinates119,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath119.setMap(maCarte);
+				flightPath120 = new google.maps.Polyline({path: flightPlanCoordinates120,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath120.setMap(maCarte);
+				flightPath121 = new google.maps.Polyline({path: flightPlanCoordinates121,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath121.setMap(maCarte);
+				flightPath122 = new google.maps.Polyline({path: flightPlanCoordinates122,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath122.setMap(maCarte);
+				flightPath123 = new google.maps.Polyline({path: flightPlanCoordinates123,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath123.setMap(maCarte);
+				flightPath124 = new google.maps.Polyline({path: flightPlanCoordinates124,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath124.setMap(maCarte);
+				flightPath125 = new google.maps.Polyline({path: flightPlanCoordinates125,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath125.setMap(maCarte);
+				flightPath126 = new google.maps.Polyline({path: flightPlanCoordinates126,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath126.setMap(maCarte);
+				flightPath127 = new google.maps.Polyline({path: flightPlanCoordinates127,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath127.setMap(maCarte);
+				flightPath128 = new google.maps.Polyline({path: flightPlanCoordinates128,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath128.setMap(maCarte);
+				flightPath129 = new google.maps.Polyline({path: flightPlanCoordinates129,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath129.setMap(maCarte);
+				flightPath130 = new google.maps.Polyline({path: flightPlanCoordinates130,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath130.setMap(maCarte);
+				flightPath131 = new google.maps.Polyline({path: flightPlanCoordinates131,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath131.setMap(maCarte);
+				flightPath132 = new google.maps.Polyline({path: flightPlanCoordinates132,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath132.setMap(maCarte);
+				flightPath133 = new google.maps.Polyline({path: flightPlanCoordinates133,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath133.setMap(maCarte);
+				flightPath134 = new google.maps.Polyline({path: flightPlanCoordinates134,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath134.setMap(maCarte);
+				flightPath135 = new google.maps.Polyline({path: flightPlanCoordinates135,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath135.setMap(maCarte);
+				flightPath136 = new google.maps.Polyline({path: flightPlanCoordinates136,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath136.setMap(maCarte);
+				flightPath137 = new google.maps.Polyline({path: flightPlanCoordinates137,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath137.setMap(maCarte);
+				flightPath138 = new google.maps.Polyline({path: flightPlanCoordinates138,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath138.setMap(maCarte);
+				flightPath139 = new google.maps.Polyline({path: flightPlanCoordinates139,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath139.setMap(maCarte);
+				flightPath140 = new google.maps.Polyline({path: flightPlanCoordinates140,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath140.setMap(maCarte);
+				flightPath141 = new google.maps.Polyline({path: flightPlanCoordinates141,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath141.setMap(maCarte);
+				flightPath142 = new google.maps.Polyline({path: flightPlanCoordinates142,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath142.setMap(maCarte);
+				flightPath143 = new google.maps.Polyline({path: flightPlanCoordinates143,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath143.setMap(maCarte);
+				flightPath144 = new google.maps.Polyline({path: flightPlanCoordinates144,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath144.setMap(maCarte);
+				flightPath145 = new google.maps.Polyline({path: flightPlanCoordinates145,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath145.setMap(maCarte);
+				flightPath146 = new google.maps.Polyline({path: flightPlanCoordinates146,geodesic: true,strokeColor: getRandomColor(rc),strokeOpacity: 0.5,strokeWeight: 2}); flightPath146.setMap(maCarte);
+				
+				
+				
+				
+				// Représentation du circuit
+				circuitPath = new google.maps.Polyline({
+					path: circuitRef,
+					geodesic: true,
+					strokeColor: '#0000FF',
+					strokeOpacity: 0.5,
+					strokeWeight: 4
+				});
+				
+				circuitPath.addListener('click', function(event) {
+					
+					var lat = event.latLng.lat();
+					var lng = event.latLng.lng();
+		
+					alert("Lat=" + lat + "; Lng=" + lng);
+					
+				});
+
+				
+				circuitPath.setMap(maCarte);
+				
+				// Représentation du circuit corrigé
+				circuitPathCorr = new google.maps.Polyline({
+					path: circuit_corr,
+					geodesic: true,
+					strokeColor: '#FF00FF',
+					strokeOpacity: 0.5,
+					strokeWeight: 4
+				});
+				
+				circuitPathCorr.setMap(maCarte);
+				
+		
+				pp();  // Par défaut : 'masquage' des passage piétons
+				circuit_smooth(); // Par défaut : 'masquage' du circuit lissé
+				
+				bool = !flightPath1.getVisible(); flightPath1.setVisible(bool);
+				bool = !flightPath2.getVisible(); flightPath2.setVisible(bool);
+				bool = !flightPath3.getVisible(); flightPath3.setVisible(bool);
+				bool = !flightPath4.getVisible(); flightPath4.setVisible(bool);
+				bool = !flightPath5.getVisible(); flightPath5.setVisible(bool);
+				bool = !flightPath6.getVisible(); flightPath6.setVisible(bool);
+				bool = !flightPath7.getVisible(); flightPath7.setVisible(bool);
+				bool = !flightPath8.getVisible(); flightPath8.setVisible(bool);
+				bool = !flightPath9.getVisible(); flightPath9.setVisible(bool);
+				bool = !flightPath10.getVisible(); flightPath10.setVisible(bool);
+				
+				bool = !flightPath11.getVisible(); flightPath11.setVisible(bool);
+				bool = !flightPath12.getVisible(); flightPath12.setVisible(bool);
+				bool = !flightPath13.getVisible(); flightPath13.setVisible(bool);
+				bool = !flightPath14.getVisible(); flightPath14.setVisible(bool);
+				bool = !flightPath15.getVisible(); flightPath15.setVisible(bool);
+				bool = !flightPath16.getVisible(); flightPath16.setVisible(bool);
+				bool = !flightPath17.getVisible(); flightPath17.setVisible(bool);
+				bool = !flightPath18.getVisible(); flightPath18.setVisible(bool);
+				bool = !flightPath19.getVisible(); flightPath19.setVisible(bool);
+				bool = !flightPath20.getVisible(); flightPath20.setVisible(bool);
+				
+				bool = !flightPath21.getVisible(); flightPath21.setVisible(bool);
+				bool = !flightPath22.getVisible(); flightPath22.setVisible(bool);
+				bool = !flightPath23.getVisible(); flightPath23.setVisible(bool);
+				bool = !flightPath24.getVisible(); flightPath24.setVisible(bool);
+				bool = !flightPath25.getVisible(); flightPath25.setVisible(bool);
+				bool = !flightPath26.getVisible(); flightPath26.setVisible(bool);
+				bool = !flightPath27.getVisible(); flightPath27.setVisible(bool);
+				bool = !flightPath28.getVisible(); flightPath28.setVisible(bool);
+				bool = !flightPath29.getVisible(); flightPath29.setVisible(bool);
+				bool = !flightPath30.getVisible(); flightPath30.setVisible(bool);
+				
+				bool = !flightPath31.getVisible(); flightPath31.setVisible(bool);
+				bool = !flightPath32.getVisible(); flightPath32.setVisible(bool);
+				bool = !flightPath33.getVisible(); flightPath33.setVisible(bool);
+				bool = !flightPath34.getVisible(); flightPath34.setVisible(bool);
+				bool = !flightPath35.getVisible(); flightPath35.setVisible(bool);
+				bool = !flightPath36.getVisible(); flightPath36.setVisible(bool);
+				bool = !flightPath37.getVisible(); flightPath37.setVisible(bool);
+				bool = !flightPath38.getVisible(); flightPath38.setVisible(bool);
+				bool = !flightPath39.getVisible(); flightPath39.setVisible(bool);
+				bool = !flightPath40.getVisible(); flightPath40.setVisible(bool);
+				
+				bool = !flightPath41.getVisible(); flightPath41.setVisible(bool);
+				bool = !flightPath42.getVisible(); flightPath42.setVisible(bool);
+				bool = !flightPath43.getVisible(); flightPath43.setVisible(bool);
+				bool = !flightPath44.getVisible(); flightPath44.setVisible(bool);
+				bool = !flightPath45.getVisible(); flightPath45.setVisible(bool);
+				bool = !flightPath46.getVisible(); flightPath46.setVisible(bool);
+				bool = !flightPath47.getVisible(); flightPath47.setVisible(bool);
+				bool = !flightPath48.getVisible(); flightPath48.setVisible(bool);
+				bool = !flightPath49.getVisible(); flightPath49.setVisible(bool);
+				bool = !flightPath50.getVisible(); flightPath50.setVisible(bool);
+				
+				bool = !flightPath51.getVisible(); flightPath51.setVisible(bool);
+				bool = !flightPath52.getVisible(); flightPath52.setVisible(bool);
+				bool = !flightPath53.getVisible(); flightPath53.setVisible(bool);
+				bool = !flightPath54.getVisible(); flightPath54.setVisible(bool);
+				bool = !flightPath55.getVisible(); flightPath55.setVisible(bool);
+				bool = !flightPath56.getVisible(); flightPath56.setVisible(bool);
+				bool = !flightPath57.getVisible(); flightPath57.setVisible(bool);
+				bool = !flightPath58.getVisible(); flightPath58.setVisible(bool);
+				bool = !flightPath59.getVisible(); flightPath59.setVisible(bool);
+				bool = !flightPath60.getVisible(); flightPath60.setVisible(bool);
+				bool = !flightPath61.getVisible(); flightPath61.setVisible(bool);
+				bool = !flightPath62.getVisible(); flightPath62.setVisible(bool);
+				bool = !flightPath63.getVisible(); flightPath63.setVisible(bool);
+				bool = !flightPath64.getVisible(); flightPath64.setVisible(bool);
+				bool = !flightPath65.getVisible(); flightPath65.setVisible(bool);
+				bool = !flightPath66.getVisible(); flightPath66.setVisible(bool);
+				bool = !flightPath67.getVisible(); flightPath67.setVisible(bool);
+				bool = !flightPath68.getVisible(); flightPath68.setVisible(bool);
+				bool = !flightPath69.getVisible(); flightPath69.setVisible(bool);
+				bool = !flightPath70.getVisible(); flightPath70.setVisible(bool);
+				bool = !flightPath71.getVisible(); flightPath71.setVisible(bool);
+				bool = !flightPath72.getVisible(); flightPath72.setVisible(bool);
+				bool = !flightPath73.getVisible(); flightPath73.setVisible(bool);
+				bool = !flightPath74.getVisible(); flightPath74.setVisible(bool);
+				bool = !flightPath75.getVisible(); flightPath75.setVisible(bool);
+				bool = !flightPath76.getVisible(); flightPath76.setVisible(bool);
+				bool = !flightPath77.getVisible(); flightPath77.setVisible(bool);
+				bool = !flightPath78.getVisible(); flightPath78.setVisible(bool);
+				bool = !flightPath79.getVisible(); flightPath79.setVisible(bool);
+				bool = !flightPath80.getVisible(); flightPath80.setVisible(bool);
+				bool = !flightPath81.getVisible(); flightPath81.setVisible(bool);
+				bool = !flightPath82.getVisible(); flightPath82.setVisible(bool);
+				bool = !flightPath83.getVisible(); flightPath83.setVisible(bool);
+				bool = !flightPath84.getVisible(); flightPath84.setVisible(bool);
+				bool = !flightPath85.getVisible(); flightPath85.setVisible(bool);
+				bool = !flightPath86.getVisible(); flightPath86.setVisible(bool);
+				bool = !flightPath87.getVisible(); flightPath87.setVisible(bool);
+				bool = !flightPath88.getVisible(); flightPath88.setVisible(bool);
+				bool = !flightPath89.getVisible(); flightPath89.setVisible(bool);
+				bool = !flightPath90.getVisible(); flightPath90.setVisible(bool);
+				bool = !flightPath91.getVisible(); flightPath91.setVisible(bool);
+				bool = !flightPath92.getVisible(); flightPath92.setVisible(bool);
+				bool = !flightPath93.getVisible(); flightPath93.setVisible(bool);
+				bool = !flightPath94.getVisible(); flightPath94.setVisible(bool);
+				bool = !flightPath95.getVisible(); flightPath95.setVisible(bool);
+				bool = !flightPath96.getVisible(); flightPath96.setVisible(bool);
+				bool = !flightPath97.getVisible(); flightPath97.setVisible(bool);
+				bool = !flightPath98.getVisible(); flightPath98.setVisible(bool);
+				bool = !flightPath99.getVisible(); flightPath99.setVisible(bool);
+				bool = !flightPath100.getVisible(); flightPath100.setVisible(bool);
+				
+				bool = !flightPath101.getVisible(); flightPath101.setVisible(bool);
+				bool = !flightPath102.getVisible(); flightPath102.setVisible(bool);
+				bool = !flightPath103.getVisible(); flightPath103.setVisible(bool);
+				bool = !flightPath104.getVisible(); flightPath104.setVisible(bool);
+				bool = !flightPath105.getVisible(); flightPath105.setVisible(bool);
+				bool = !flightPath106.getVisible(); flightPath106.setVisible(bool);
+				bool = !flightPath107.getVisible(); flightPath107.setVisible(bool);
+				bool = !flightPath108.getVisible(); flightPath108.setVisible(bool);
+				bool = !flightPath109.getVisible(); flightPath109.setVisible(bool);
+				bool = !flightPath110.getVisible(); flightPath110.setVisible(bool);
+				bool = !flightPath111.getVisible(); flightPath111.setVisible(bool);
+				bool = !flightPath112.getVisible(); flightPath112.setVisible(bool);
+				bool = !flightPath113.getVisible(); flightPath113.setVisible(bool);
+				bool = !flightPath114.getVisible(); flightPath114.setVisible(bool);
+				bool = !flightPath115.getVisible(); flightPath115.setVisible(bool);
+				bool = !flightPath116.getVisible(); flightPath116.setVisible(bool);
+				bool = !flightPath117.getVisible(); flightPath117.setVisible(bool);
+				bool = !flightPath118.getVisible(); flightPath118.setVisible(bool);
+				bool = !flightPath119.getVisible(); flightPath119.setVisible(bool);
+				bool = !flightPath120.getVisible(); flightPath120.setVisible(bool);
+				bool = !flightPath121.getVisible(); flightPath121.setVisible(bool);
+				bool = !flightPath122.getVisible(); flightPath122.setVisible(bool);
+				bool = !flightPath123.getVisible(); flightPath123.setVisible(bool);
+				bool = !flightPath124.getVisible(); flightPath124.setVisible(bool);
+				bool = !flightPath125.getVisible(); flightPath125.setVisible(bool);
+				bool = !flightPath126.getVisible(); flightPath126.setVisible(bool);
+				bool = !flightPath127.getVisible(); flightPath127.setVisible(bool);
+				bool = !flightPath128.getVisible(); flightPath128.setVisible(bool);
+				bool = !flightPath129.getVisible(); flightPath129.setVisible(bool);
+				bool = !flightPath130.getVisible(); flightPath130.setVisible(bool);
+				bool = !flightPath131.getVisible(); flightPath131.setVisible(bool);
+				bool = !flightPath132.getVisible(); flightPath132.setVisible(bool);
+				bool = !flightPath133.getVisible(); flightPath133.setVisible(bool);
+				bool = !flightPath134.getVisible(); flightPath134.setVisible(bool);
+				bool = !flightPath135.getVisible(); flightPath135.setVisible(bool);
+				bool = !flightPath136.getVisible(); flightPath136.setVisible(bool);
+				bool = !flightPath137.getVisible(); flightPath137.setVisible(bool);
+				bool = !flightPath138.getVisible(); flightPath138.setVisible(bool);
+				bool = !flightPath139.getVisible(); flightPath139.setVisible(bool);
+				bool = !flightPath140.getVisible(); flightPath140.setVisible(bool);
+				bool = !flightPath141.getVisible(); flightPath141.setVisible(bool);
+				bool = !flightPath142.getVisible(); flightPath142.setVisible(bool);
+				bool = !flightPath143.getVisible(); flightPath143.setVisible(bool);
+				bool = !flightPath144.getVisible(); flightPath144.setVisible(bool);
+				bool = !flightPath145.getVisible(); flightPath145.setVisible(bool);
+				bool = !flightPath146.getVisible(); flightPath146.setVisible(bool);
+				
+				
+			}
+			// Initialisation du rendu
+			google.maps.event.addDomListener(window, 'load', initialisation)
+			
+			
+			
+			// ---------------------------------------
+			// Fonctions de 'masquage' des marqueurs
+			// ---------------------------------------
+			
+			function ft(){
+				var bool = !TAB_FEU[0].getVisible();
+				for (k=0; k<TAB_FEU.length; k++){
+					TAB_FEU[k].setVisible(bool);
+				}
+			}
+			
+			function st(){
+				var bool = !TAB_STOP[0].getVisible();
+				for (k=0; k<TAB_STOP.length; k++){
+					TAB_STOP[k].setVisible(bool);
+				}
+			}
+			
+			
+			function da(){
+				var bool = !TAB_BUMP[0].getVisible();
+				for (k=0; k<TAB_BUMP.length; k++){
+					TAB_BUMP[k].setVisible(bool);
+				}
+			}
+			
+			function pp(){
+				var bool = !TAB_PP[0].getVisible();
+				for (k=0; k<TAB_PP.length; k++){
+					TAB_PP[k].setVisible(bool);
+				}
+			}
+			
+			function circuit(){
+				document.getElementById("dd1").disabled = !document.getElementById("dd1").disabled;
+			}
+			
+			function circuit_smooth(){
+				var bool = !circuitPathCorr.getVisible();
+				circuitPathCorr.setVisible(bool);
+			}
+			
+			function rf(){
+				var bool = !circuitPath.getVisible();
+				circuitPath.setVisible(bool);
+			}
+			
+			function recal(){
+				document.getElementById("dd2").disabled = !document.getElementById("dd2").disabled;
+			}
+			
+			function satellite(){maCarte.setMapTypeId(google.maps.MapTypeId.SATELLITE);}
+			function roadmap(){maCarte.setMapTypeId(google.maps.MapTypeId.ROADMAP);}
+			function terrain(){maCarte.setMapTypeId(google.maps.MapTypeId.TERRAIN);}
+			function hybrid(){maCarte.setMapTypeId(google.maps.MapTypeId.HYBRID);}
+			
+			function test(x){
+			
+				if (x == 0){
+				
+					var bool = (document.getElementById("tt0").value != 'toutes');
+					
+					flightPath1.setVisible(bool);
+					flightPath2.setVisible(bool);
+					flightPath3.setVisible(bool);
+					flightPath4.setVisible(bool);
+					flightPath5.setVisible(bool);
+					flightPath6.setVisible(bool);
+					flightPath7.setVisible(bool);
+					flightPath8.setVisible(bool);
+					flightPath9.setVisible(bool);
+					flightPath10.setVisible(bool);
+					
+					flightPath11.setVisible(bool);
+					flightPath12.setVisible(bool);
+					flightPath13.setVisible(bool);
+					flightPath14.setVisible(bool);
+					flightPath15.setVisible(bool);
+					flightPath16.setVisible(bool);
+					flightPath17.setVisible(bool);
+					flightPath18.setVisible(bool);
+					flightPath19.setVisible(bool);
+					flightPath20.setVisible(bool);
+					
+					flightPath21.setVisible(bool);
+					flightPath22.setVisible(bool);
+					flightPath23.setVisible(bool);
+					flightPath24.setVisible(bool);
+					flightPath25.setVisible(bool);
+					flightPath26.setVisible(bool);
+					flightPath27.setVisible(bool);
+					flightPath28.setVisible(bool);
+					flightPath29.setVisible(bool);
+					flightPath30.setVisible(bool);
+					
+					flightPath31.setVisible(bool);
+					flightPath32.setVisible(bool);
+					flightPath33.setVisible(bool);
+					flightPath34.setVisible(bool);
+					flightPath35.setVisible(bool);
+					flightPath36.setVisible(bool);
+					flightPath37.setVisible(bool);
+					flightPath38.setVisible(bool);
+					flightPath39.setVisible(bool);
+					flightPath40.setVisible(bool);
+					
+					flightPath41.setVisible(bool);
+					flightPath42.setVisible(bool);
+					flightPath43.setVisible(bool);
+					flightPath44.setVisible(bool);
+					flightPath45.setVisible(bool);
+					flightPath46.setVisible(bool);
+					flightPath47.setVisible(bool);
+					flightPath48.setVisible(bool);
+					flightPath49.setVisible(bool);
+					flightPath50.setVisible(bool);
+					
+					flightPath51.setVisible(bool);
+					flightPath52.setVisible(bool);
+					flightPath53.setVisible(bool);
+					flightPath54.setVisible(bool);
+					flightPath55.setVisible(bool);
+					flightPath56.setVisible(bool);
+					flightPath57.setVisible(bool);
+					flightPath58.setVisible(bool);
+					flightPath59.setVisible(bool);
+					flightPath60.setVisible(bool);
+					flightPath61.setVisible(bool);
+					flightPath62.setVisible(bool);
+					flightPath63.setVisible(bool);
+					flightPath64.setVisible(bool);
+					flightPath65.setVisible(bool);
+					flightPath66.setVisible(bool);
+					flightPath67.setVisible(bool);
+					flightPath68.setVisible(bool);
+					flightPath69.setVisible(bool);
+					flightPath70.setVisible(bool);
+					flightPath71.setVisible(bool);
+					flightPath72.setVisible(bool);
+					flightPath73.setVisible(bool);
+					flightPath74.setVisible(bool);
+					flightPath75.setVisible(bool);
+					flightPath76.setVisible(bool);
+					flightPath77.setVisible(bool);
+					flightPath78.setVisible(bool);
+					flightPath79.setVisible(bool);
+					flightPath80.setVisible(bool);
+					flightPath81.setVisible(bool);
+					flightPath82.setVisible(bool);
+					flightPath83.setVisible(bool);
+					flightPath84.setVisible(bool);
+					flightPath85.setVisible(bool);
+					flightPath86.setVisible(bool);
+					flightPath87.setVisible(bool);
+					flightPath88.setVisible(bool);
+					flightPath89.setVisible(bool);
+					flightPath90.setVisible(bool);
+					flightPath91.setVisible(bool);
+					flightPath92.setVisible(bool);
+					flightPath93.setVisible(bool);
+					flightPath94.setVisible(bool);
+					flightPath95.setVisible(bool);
+					flightPath96.setVisible(bool);
+					flightPath97.setVisible(bool);
+					flightPath98.setVisible(bool);
+					flightPath99.setVisible(bool);
+					flightPath100.setVisible(bool);
+					
+					flightPath101.setVisible(bool);
+					flightPath102.setVisible(bool);
+					flightPath102.setVisible(bool);
+					flightPath104.setVisible(bool);
+					flightPath105.setVisible(bool);
+					flightPath106.setVisible(bool);
+					flightPath107.setVisible(bool);
+					flightPath108.setVisible(bool);
+					flightPath109.setVisible(bool);
+					flightPath110.setVisible(bool);
+					flightPath111.setVisible(bool);
+					flightPath112.setVisible(bool);
+					flightPath113.setVisible(bool);
+					flightPath114.setVisible(bool);
+					flightPath115.setVisible(bool);
+					flightPath116.setVisible(bool);
+					flightPath117.setVisible(bool);
+					flightPath118.setVisible(bool);
+					flightPath119.setVisible(bool);
+					flightPath120.setVisible(bool);
+					flightPath121.setVisible(bool);
+					flightPath122.setVisible(bool);
+					flightPath123.setVisible(bool);
+					flightPath124.setVisible(bool);
+					flightPath125.setVisible(bool);
+					flightPath126.setVisible(bool);
+					flightPath127.setVisible(bool);
+					flightPath128.setVisible(bool);
+					flightPath129.setVisible(bool);
+					flightPath130.setVisible(bool);
+					flightPath131.setVisible(bool);
+					flightPath132.setVisible(bool);
+					flightPath133.setVisible(bool);
+					flightPath134.setVisible(bool);
+					flightPath135.setVisible(bool);
+					flightPath136.setVisible(bool);
+					flightPath137.setVisible(bool);
+					flightPath138.setVisible(bool);
+					flightPath139.setVisible(bool);
+					flightPath140.setVisible(bool);
+					flightPath141.setVisible(bool);
+					flightPath142.setVisible(bool);
+					flightPath143.setVisible(bool);
+					flightPath144.setVisible(bool);
+					flightPath145.setVisible(bool);
+					flightPath146.setVisible(bool);
+					
+
+					
+					for (i=1; i<=146; i++){
+					
+						if (bool){
+							document.getElementById("cb"+i).value = "trace2";
+						}
+						else{
+							document.getElementById("cb"+i).value = "trace1";
+						}
+				
+						test(i);
+				
+					}
+					
+				}
+			
+				if (x == 1){var bool = !flightPath1.getVisible(); flightPath1.setVisible(bool);}
+				if (x == 2){var bool = !flightPath2.getVisible(); flightPath2.setVisible(bool);}
+				if (x == 3){var bool = !flightPath3.getVisible(); flightPath3.setVisible(bool);}
+				if (x == 4){var bool = !flightPath4.getVisible(); flightPath4.setVisible(bool);}
+				if (x == 5){var bool = !flightPath5.getVisible(); flightPath5.setVisible(bool);}
+				if (x == 6){var bool = !flightPath6.getVisible(); flightPath6.setVisible(bool);}
+				if (x == 7){var bool = !flightPath7.getVisible(); flightPath7.setVisible(bool);}
+				if (x == 8){var bool = !flightPath8.getVisible(); flightPath8.setVisible(bool);}
+				if (x == 9){var bool = !flightPath9.getVisible(); flightPath9.setVisible(bool);}
+				if (x == 10){var bool = !flightPath10.getVisible(); flightPath10.setVisible(bool);}
+				if (x == 11){var bool = !flightPath11.getVisible(); flightPath11.setVisible(bool);}
+				if (x == 12){var bool = !flightPath12.getVisible(); flightPath12.setVisible(bool);}
+				if (x == 13){var bool = !flightPath13.getVisible(); flightPath13.setVisible(bool);}
+				if (x == 14){var bool = !flightPath14.getVisible(); flightPath14.setVisible(bool);}
+				if (x == 15){var bool = !flightPath15.getVisible(); flightPath15.setVisible(bool);}
+				if (x == 16){var bool = !flightPath16.getVisible(); flightPath16.setVisible(bool);}
+				if (x == 17){var bool = !flightPath17.getVisible(); flightPath17.setVisible(bool);}
+				if (x == 18){var bool = !flightPath18.getVisible(); flightPath18.setVisible(bool);}
+				if (x == 19){var bool = !flightPath19.getVisible(); flightPath19.setVisible(bool);}
+			    if (x == 20){var bool = !flightPath20.getVisible(); flightPath20.setVisible(bool);}			
+				if (x == 21){var bool = !flightPath21.getVisible(); flightPath21.setVisible(bool);}
+				if (x == 22){var bool = !flightPath22.getVisible(); flightPath22.setVisible(bool);}
+				if (x == 23){var bool = !flightPath23.getVisible(); flightPath23.setVisible(bool);}
+				if (x == 24){var bool = !flightPath24.getVisible(); flightPath24.setVisible(bool);}
+				if (x == 25){var bool = !flightPath25.getVisible(); flightPath25.setVisible(bool);}
+				if (x == 26){var bool = !flightPath26.getVisible(); flightPath26.setVisible(bool);}
+				if (x == 27){var bool = !flightPath27.getVisible(); flightPath27.setVisible(bool);}
+				if (x == 28){var bool = !flightPath28.getVisible(); flightPath28.setVisible(bool);}
+				if (x == 29){var bool = !flightPath29.getVisible(); flightPath29.setVisible(bool);}
+				if (x == 30){var bool = !flightPath30.getVisible(); flightPath30.setVisible(bool);}		
+				if (x == 31){var bool = !flightPath31.getVisible(); flightPath31.setVisible(bool);}
+				if (x == 32){var bool = !flightPath32.getVisible(); flightPath32.setVisible(bool);}
+				if (x == 33){var bool = !flightPath33.getVisible(); flightPath33.setVisible(bool);}
+				if (x == 34){var bool = !flightPath34.getVisible(); flightPath34.setVisible(bool);}
+				if (x == 35){var bool = !flightPath35.getVisible(); flightPath35.setVisible(bool);}
+				if (x == 36){var bool = !flightPath36.getVisible(); flightPath36.setVisible(bool);}
+				if (x == 37){var bool = !flightPath37.getVisible(); flightPath37.setVisible(bool);}
+				if (x == 38){var bool = !flightPath38.getVisible(); flightPath38.setVisible(bool);}
+				if (x == 39){var bool = !flightPath39.getVisible(); flightPath39.setVisible(bool);}
+				if (x == 40){var bool = !flightPath40.getVisible(); flightPath40.setVisible(bool);}		
+				if (x == 41){var bool = !flightPath41.getVisible(); flightPath41.setVisible(bool);}
+				if (x == 42){var bool = !flightPath42.getVisible(); flightPath42.setVisible(bool);}
+				if (x == 43){var bool = !flightPath43.getVisible(); flightPath43.setVisible(bool);}
+				if (x == 44){var bool = !flightPath44.getVisible(); flightPath44.setVisible(bool);}
+				if (x == 45){var bool = !flightPath45.getVisible(); flightPath45.setVisible(bool);}
+				if (x == 46){var bool = !flightPath46.getVisible(); flightPath46.setVisible(bool);}
+				if (x == 47){var bool = !flightPath47.getVisible(); flightPath47.setVisible(bool);}
+				if (x == 48){var bool = !flightPath48.getVisible(); flightPath48.setVisible(bool);}
+				if (x == 49){var bool = !flightPath49.getVisible(); flightPath49.setVisible(bool);}
+				if (x == 50){var bool = !flightPath50.getVisible(); flightPath50.setVisible(bool);}
+				if (x == 51){var bool = !flightPath51.getVisible(); flightPath51.setVisible(bool);}
+				if (x == 52){var bool = !flightPath52.getVisible(); flightPath52.setVisible(bool);}
+				if (x == 53){var bool = !flightPath53.getVisible(); flightPath53.setVisible(bool);}
+				if (x == 54){var bool = !flightPath54.getVisible(); flightPath54.setVisible(bool);}
+				if (x == 55){var bool = !flightPath55.getVisible(); flightPath55.setVisible(bool);}
+				if (x == 56){var bool = !flightPath56.getVisible(); flightPath56.setVisible(bool);}
+				if (x == 57){var bool = !flightPath57.getVisible(); flightPath57.setVisible(bool);}
+				if (x == 58){var bool = !flightPath58.getVisible(); flightPath58.setVisible(bool);}
+				if (x == 59){var bool = !flightPath59.getVisible(); flightPath59.setVisible(bool);}
+				if (x == 60){var bool = !flightPath60.getVisible(); flightPath60.setVisible(bool);}
+				if (x == 61){var bool = !flightPath61.getVisible(); flightPath61.setVisible(bool);}
+				if (x == 62){var bool = !flightPath62.getVisible(); flightPath62.setVisible(bool);}
+				if (x == 63){var bool = !flightPath63.getVisible(); flightPath63.setVisible(bool);}
+				if (x == 64){var bool = !flightPath64.getVisible(); flightPath64.setVisible(bool);}
+				if (x == 65){var bool = !flightPath65.getVisible(); flightPath65.setVisible(bool);}
+				if (x == 66){var bool = !flightPath66.getVisible(); flightPath66.setVisible(bool);}
+				if (x == 67){var bool = !flightPath67.getVisible(); flightPath67.setVisible(bool);}
+				if (x == 68){var bool = !flightPath68.getVisible(); flightPath68.setVisible(bool);}
+				if (x == 69){var bool = !flightPath69.getVisible(); flightPath69.setVisible(bool);}
+				if (x == 70){var bool = !flightPath70.getVisible(); flightPath70.setVisible(bool);}
+				if (x == 71){var bool = !flightPath71.getVisible(); flightPath71.setVisible(bool);}
+				if (x == 72){var bool = !flightPath72.getVisible(); flightPath72.setVisible(bool);}
+				if (x == 73){var bool = !flightPath73.getVisible(); flightPath73.setVisible(bool);}
+				if (x == 74){var bool = !flightPath74.getVisible(); flightPath74.setVisible(bool);}
+				if (x == 75){var bool = !flightPath75.getVisible(); flightPath75.setVisible(bool);}
+				if (x == 76){var bool = !flightPath76.getVisible(); flightPath76.setVisible(bool);}
+				if (x == 77){var bool = !flightPath77.getVisible(); flightPath77.setVisible(bool);}
+				if (x == 78){var bool = !flightPath78.getVisible(); flightPath78.setVisible(bool);}
+				if (x == 79){var bool = !flightPath79.getVisible(); flightPath79.setVisible(bool);}
+				if (x == 80){var bool = !flightPath80.getVisible(); flightPath80.setVisible(bool);}
+				if (x == 81){var bool = !flightPath81.getVisible(); flightPath81.setVisible(bool);}
+				if (x == 82){var bool = !flightPath82.getVisible(); flightPath82.setVisible(bool);}
+				if (x == 83){var bool = !flightPath83.getVisible(); flightPath83.setVisible(bool);}
+				if (x == 84){var bool = !flightPath84.getVisible(); flightPath84.setVisible(bool);}
+				if (x == 85){var bool = !flightPath85.getVisible(); flightPath85.setVisible(bool);}
+				if (x == 86){var bool = !flightPath86.getVisible(); flightPath86.setVisible(bool);}
+				if (x == 87){var bool = !flightPath87.getVisible(); flightPath87.setVisible(bool);}
+				if (x == 88){var bool = !flightPath88.getVisible(); flightPath88.setVisible(bool);}
+				if (x == 89){var bool = !flightPath89.getVisible(); flightPath89.setVisible(bool);}
+				if (x == 90){var bool = !flightPath90.getVisible(); flightPath90.setVisible(bool);}
+				if (x == 91){var bool = !flightPath91.getVisible(); flightPath91.setVisible(bool);}
+				if (x == 92){var bool = !flightPath92.getVisible(); flightPath92.setVisible(bool);}
+				if (x == 93){var bool = !flightPath93.getVisible(); flightPath93.setVisible(bool);}
+				if (x == 94){var bool = !flightPath94.getVisible(); flightPath94.setVisible(bool);}
+				if (x == 95){var bool = !flightPath95.getVisible(); flightPath95.setVisible(bool);}
+				if (x == 96){var bool = !flightPath96.getVisible(); flightPath96.setVisible(bool);}
+				if (x == 97){var bool = !flightPath97.getVisible(); flightPath97.setVisible(bool);}
+				if (x == 98){var bool = !flightPath98.getVisible(); flightPath98.setVisible(bool);}
+				if (x == 99){var bool = !flightPath99.getVisible(); flightPath99.setVisible(bool);}
+				if (x == 100){var bool = !flightPath100.getVisible(); flightPath100.setVisible(bool);}
+				if (x == 101){var bool = !flightPath101.getVisible(); flightPath101.setVisible(bool);}
+				if (x == 102){var bool = !flightPath102.getVisible(); flightPath102.setVisible(bool);}
+				if (x == 103){var bool = !flightPath103.getVisible(); flightPath103.setVisible(bool);}
+				if (x == 104){var bool = !flightPath104.getVisible(); flightPath104.setVisible(bool);}
+				if (x == 105){var bool = !flightPath105.getVisible(); flightPath105.setVisible(bool);}
+				if (x == 106){var bool = !flightPath106.getVisible(); flightPath106.setVisible(bool);}
+				if (x == 107){var bool = !flightPath107.getVisible(); flightPath107.setVisible(bool);}
+				if (x == 108){var bool = !flightPath108.getVisible(); flightPath108.setVisible(bool);}
+				if (x == 109){var bool = !flightPath109.getVisible(); flightPath109.setVisible(bool);}
+				if (x == 110){var bool = !flightPath110.getVisible(); flightPath110.setVisible(bool);}
+				if (x == 111){var bool = !flightPath111.getVisible(); flightPath111.setVisible(bool);}
+				if (x == 112){var bool = !flightPath112.getVisible(); flightPath112.setVisible(bool);}
+				if (x == 113){var bool = !flightPath113.getVisible(); flightPath113.setVisible(bool);}
+				if (x == 114){var bool = !flightPath114.getVisible(); flightPath114.setVisible(bool);}
+				if (x == 115){var bool = !flightPath115.getVisible(); flightPath115.setVisible(bool);}
+				if (x == 116){var bool = !flightPath116.getVisible(); flightPath116.setVisible(bool);}
+				if (x == 117){var bool = !flightPath117.getVisible(); flightPath117.setVisible(bool);}
+				if (x == 118){var bool = !flightPath118.getVisible(); flightPath118.setVisible(bool);}
+				if (x == 119){var bool = !flightPath119.getVisible(); flightPath119.setVisible(bool);}
+				if (x == 120){var bool = !flightPath120.getVisible(); flightPath120.setVisible(bool);}
+				if (x == 121){var bool = !flightPath121.getVisible(); flightPath121.setVisible(bool);}
+				if (x == 122){var bool = !flightPath122.getVisible(); flightPath122.setVisible(bool);}
+				if (x == 123){var bool = !flightPath123.getVisible(); flightPath123.setVisible(bool);}
+				if (x == 124){var bool = !flightPath124.getVisible(); flightPath124.setVisible(bool);}
+				if (x == 125){var bool = !flightPath125.getVisible(); flightPath125.setVisible(bool);}
+				if (x == 126){var bool = !flightPath126.getVisible(); flightPath126.setVisible(bool);}
+				if (x == 127){var bool = !flightPath127.getVisible(); flightPath127.setVisible(bool);}
+				if (x == 128){var bool = !flightPath128.getVisible(); flightPath128.setVisible(bool);}
+				if (x == 129){var bool = !flightPath129.getVisible(); flightPath129.setVisible(bool);}
+				if (x == 130){var bool = !flightPath130.getVisible(); flightPath130.setVisible(bool);}
+				if (x == 131){var bool = !flightPath131.getVisible(); flightPath131.setVisible(bool);}
+				if (x == 132){var bool = !flightPath132.getVisible(); flightPath132.setVisible(bool);}
+				if (x == 133){var bool = !flightPath133.getVisible(); flightPath133.setVisible(bool);}
+				if (x == 134){var bool = !flightPath134.getVisible(); flightPath134.setVisible(bool);}
+				if (x == 135){var bool = !flightPath135.getVisible(); flightPath135.setVisible(bool);}
+				if (x == 136){var bool = !flightPath136.getVisible(); flightPath136.setVisible(bool);}
+				if (x == 137){var bool = !flightPath137.getVisible(); flightPath137.setVisible(bool);}
+				if (x == 138){var bool = !flightPath138.getVisible(); flightPath138.setVisible(bool);}
+				if (x == 139){var bool = !flightPath139.getVisible(); flightPath139.setVisible(bool);}
+				if (x == 140){var bool = !flightPath140.getVisible(); flightPath140.setVisible(bool);}
+				if (x == 141){var bool = !flightPath141.getVisible(); flightPath141.setVisible(bool);}
+				if (x == 142){var bool = !flightPath142.getVisible(); flightPath142.setVisible(bool);}
+				if (x == 143){var bool = !flightPath143.getVisible(); flightPath143.setVisible(bool);}
+				if (x == 144){var bool = !flightPath144.getVisible(); flightPath144.setVisible(bool);}
+				if (x == 145){var bool = !flightPath145.getVisible(); flightPath145.setVisible(bool);}
+				if (x == 146){var bool = !flightPath146.getVisible(); flightPath146.setVisible(bool);}
+				
+			
+				if (x != 0){
+				
+			
+					if (document.getElementById("cb"+x).value == "trace1"){
+						document.getElementById("cb"+x).innerHTML = "<b>&#128306 Trace "+TABCODES[x-1]+"</b>"; 
+						document.getElementById("cb"+x).value = "trace2";
+					}
+					else{
+						document.getElementById("cb"+x).innerHTML = "&#128307 Trace "+TABCODES[x-1]; 
+						document.getElementById("cb"+x).value = "trace1";
+					}
+				
+				}
+				
+				if (x == 0){
+				
+					if (document.getElementById("tt0").value == "toutes"){
+						document.getElementById("tt0").innerHTML = "<b>&#128306 Toutes</b>"; 
+						document.getElementById("tt0").value = "toutes2";
+					}
+					else{
+						document.getElementById("tt0").innerHTML = "&#128307 Toutes"; 
+						document.getElementById("tt0").value = "toutes";
+					}
+				
+				}
+			
+			}
+			
+		
+			function change_circuit(n){
+				
+				window.location.href = "data/circuit"+n+".htm"
+			
+			}
+			
+			function open_graph(){
+			
+				swal({
+					title: "Plot speed profiles window",
+					text: "Enter right curvilinear abscissa",
+					type: "input",
+					showCancelButton: true,
+					closeOnConfirm: false,
+					animation: "slide-from-top",
+					inputPlaceholder: "Write something"
+				},
+			
+				function(inputValue){
+				
+					if (inputValue === false) return false;
+	
+					if (inputValue === "") {
+					
+						swal.showInputError("Incorrect value");
+						return false
+					}
+				
+				
+				var abs_init = Math.round(inputValue/10)*10;
+				var abs_fin = abs_init + 100;
+				
+  
+				window.open("data/svg/XVE_"+abs_init+"_"+abs_fin+".svg","nom_popup","menubar=no, status=no, scrollbars=no, toolbar=no, width=1200, height=770, left=350");
+			
+				});
+				
+			
+				
+			}
+
+			
+			
+		</script>
+		
+	</head>
+	<body bgcolor="#ccffcc">
+	
+		<div id="panel">
+		
+			<div id="main">
+				<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+			</div>
+			
+		
+			<p><b>&nbsp&nbsp&nbsp<font size="4">Couches de données</font></b></p>
+			<hr width="200" class="style11">
+			
+	
+			<!-- Interactions -->
+			<br/>
+			<hr width="200" class="style11">
+			<p><b>&nbsp&nbsp Couches vectorielles</b></p>
+		
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Circuit" checked = true onClick="javascript:rf()"> <font size="3">Référence &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Circuit" onClick="javascript:circuit_smooth()"> <font size="3">Référence lissée &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Circuit" onClick="javascript:circuit()"> <font size="3">Traces GPS &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			
+			&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<select id="dd1" disabled="disabled">
+			    <label><option id="tt0" value="toutes" onClick="javascript:test(0)" ><b>&#128307 Toutes</b></option></label>
+				<label><option id="cb1" value="trace1" onClick="javascript:test(1)"  ><b>&#128307 Trace C01-1</b></option></label>
+				<label><option id="cb2" value="trace1" onClick="javascript:test(2)"  ><b>&#128307 Trace C01-2</b></option></label>
+				<label><option id="cb3" value="trace1" onClick="javascript:test(3)"  ><b>&#128307 Trace C01-3</b></option></label>
+				<label><option id="cb4" value="trace1" onClick="javascript:test(4)"  ><b>&#128307 Trace C01-4</b></option></label>
+				<label><option id="cb5" value="trace1" onClick="javascript:test(5)"  ><b>&#128307 Trace C01-5</b></option></label>
+				<label><option id="cb6" value="trace1" onClick="javascript:test(6)"  ><b>&#128307 Trace C02-1</b></option></label>
+				<label><option id="cb7" value="trace1" onClick="javascript:test(7)"  ><b>&#128307 Trace C02-2</b></option></label>
+				<label><option id="cb8" value="trace1" onClick="javascript:test(8)"  ><b>&#128307 Trace C02-3</b></option></label>
+				<label><option id="cb9" value="trace1" onClick="javascript:test(9)"  ><b>&#128307 Trace C02-4</b></option></label>
+				<label><option id="cb10" value="trace1" onClick="javascript:test(10)"><b>&#128307 Trace C02-5</b></option></label>
+				<label><option id="cb11" value="trace1" onClick="javascript:test(11)"><b>&#128307 Trace C03-1</b></option></label>
+				<label><option id="cb12" value="trace1" onClick="javascript:test(12)"><b>&#128307 Trace C03-2</b></option></label>
+				<label><option id="cb13" value="trace1" onClick="javascript:test(13)"><b>&#128307 Trace C03-3</b></option></label>
+				<label><option id="cb14" value="trace1" onClick="javascript:test(14)"><b>&#128307 Trace C03-4</b></option></label>
+				<label><option id="cb15" value="trace1" onClick="javascript:test(15)"><b>&#128307 Trace C03-5</b></option></label>
+				<label><option id="cb16" value="trace1" onClick="javascript:test(16)"><b>&#128307 Trace C04-1</b></option></label>
+				<label><option id="cb17" value="trace1" onClick="javascript:test(17)"><b>&#128307 Trace C04-2</b></option></label>
+				<label><option id="cb18" value="trace1" onClick="javascript:test(18)"><b>&#128307 Trace C04-3</b></option></label>
+				<label><option id="cb19" value="trace1" onClick="javascript:test(19)"><b>&#128307 Trace C04-4</b></option></label>
+				<label><option id="cb20" value="trace1" onClick="javascript:test(20)"><b>&#128307 Trace C04-5</b></option></label>
+				<label><option id="cb21" value="trace1" onClick="javascript:test(21)"><b>&#128307 Trace C05-1</b></option></label>
+				<label><option id="cb22" value="trace1" onClick="javascript:test(22)"><b>&#128307 Trace C06-1</b></option></label>
+				<label><option id="cb23" value="trace1" onClick="javascript:test(23)"><b>&#128307 Trace C06-2</b></option></label>
+				<label><option id="cb24" value="trace1" onClick="javascript:test(24)"><b>&#128307 Trace C06-3</b></option></label>
+				<label><option id="cb25" value="trace1" onClick="javascript:test(25)"><b>&#128307 Trace C06-4</b></option></label>
+				<label><option id="cb26" value="trace1" onClick="javascript:test(26)"><b>&#128307 Trace C06-5</b></option></label>
+				<label><option id="cb27" value="trace1" onClick="javascript:test(27)"><b>&#128307 Trace C07-1</b></option></label>
+				<label><option id="cb28" value="trace1" onClick="javascript:test(28)"><b>&#128307 Trace C07-2</b></option></label>
+				<label><option id="cb29" value="trace1" onClick="javascript:test(29)"><b>&#128307 Trace C07-3</b></option></label>
+				<label><option id="cb30" value="trace1" onClick="javascript:test(30)"><b>&#128307 Trace C07-4</b></option></label>
+				<label><option id="cb31" value="trace1" onClick="javascript:test(31)"><b>&#128307 Trace C07-5</b></option></label>
+				<label><option id="cb32" value="trace1" onClick="javascript:test(32)"><b>&#128307 Trace C08-1</b></option></label>
+				<label><option id="cb33" value="trace1" onClick="javascript:test(33)"><b>&#128307 Trace C09-1</b></option></label>
+				<label><option id="cb34" value="trace1" onClick="javascript:test(34)"><b>&#128307 Trace C10-1</b></option></label>
+				<label><option id="cb35" value="trace1" onClick="javascript:test(35)"><b>&#128307 Trace C10-2</b></option></label>
+				<label><option id="cb36" value="trace1" onClick="javascript:test(36)"><b>&#128307 Trace C10-3</b></option></label>
+				<label><option id="cb37" value="trace1" onClick="javascript:test(37)"><b>&#128307 Trace C10-4</b></option></label>
+				<label><option id="cb38" value="trace1" onClick="javascript:test(38)"><b>&#128307 Trace C10-5</b></option></label>
+				<label><option id="cb39" value="trace1" onClick="javascript:test(39)"><b>&#128307 Trace C11-1</b></option></label>
+				<label><option id="cb40" value="trace1" onClick="javascript:test(40)"><b>&#128307 Trace C11-2</b></option></label>
+				<label><option id="cb41" value="trace1" onClick="javascript:test(41)"><b>&#128307 Trace C11-3</b></option></label>
+				<label><option id="cb42" value="trace1" onClick="javascript:test(42)"><b>&#128307 Trace C11-4</b></option></label>
+				<label><option id="cb43" value="trace1" onClick="javascript:test(43)"><b>&#128307 Trace C11-5</b></option></label>
+				<label><option id="cb44" value="trace1" onClick="javascript:test(44)"><b>&#128307 Trace C12-1</b></option></label>
+				<label><option id="cb45" value="trace1" onClick="javascript:test(45)"><b>&#128307 Trace C12-2</b></option></label>
+				<label><option id="cb46" value="trace1" onClick="javascript:test(46)"><b>&#128307 Trace C12-3</b></option></label>
+				<label><option id="cb47" value="trace1" onClick="javascript:test(47)"><b>&#128307 Trace C12-4</b></option></label>
+				<label><option id="cb48" value="trace1" onClick="javascript:test(48)"><b>&#128307 Trace C12-5</b></option></label>
+				<label><option id="cb49" value="trace1" onClick="javascript:test(49)"><b>&#128307 Trace C13-1</b></option></label>
+				<label><option id="cb50" value="trace1" onClick="javascript:test(50)"><b>&#128307 Trace C13-2</b></option></label>
+				<label><option id="cb51" value="trace1" onClick="javascript:test(51)"><b>&#128307 Trace C13-3</b></option></label>
+				<label><option id="cb52" value="trace1" onClick="javascript:test(52)"><b>&#128307 Trace C13-4</b></option></label>
+				<label><option id="cb53" value="trace1" onClick="javascript:test(53)"><b>&#128307 Trace C13-5</b></option></label>
+				<label><option id="cb54" value="trace1" onClick="javascript:test(54)"><b>&#128307 Trace C14-1</b></option></label>
+				<label><option id="cb55" value="trace1" onClick="javascript:test(55)"><b>&#128307 Trace C14-2</b></option></label>
+				<label><option id="cb56" value="trace1" onClick="javascript:test(56)"><b>&#128307 Trace C14-3</b></option></label>
+				<label><option id="cb57" value="trace1" onClick="javascript:test(57)"><b>&#128307 Trace C14-4</b></option></label>
+				<label><option id="cb58" value="trace1" onClick="javascript:test(58)"><b>&#128307 Trace C14-5</b></option></label>
+				<label><option id="cb59" value="trace1" onClick="javascript:test(59)"><b>&#128307 Trace C15-1</b></option></label>
+				<label><option id="cb60" value="trace1" onClick="javascript:test(60)"><b>&#128307 Trace C15-2</b></option></label>
+				<label><option id="cb61" value="trace1" onClick="javascript:test(61)"><b>&#128307 Trace C15-3</b></option></label>
+				<label><option id="cb62" value="trace1" onClick="javascript:test(62)"><b>&#128307 Trace C15-4</b></option></label>
+				<label><option id="cb63" value="trace1" onClick="javascript:test(63)"><b>&#128307 Trace C15-5</b></option></label>
+				<label><option id="cb64" value="trace1" onClick="javascript:test(64)"><b>&#128307 Trace C16-1</b></option></label>
+				<label><option id="cb65" value="trace1" onClick="javascript:test(65)"><b>&#128307 Trace C16-2</b></option></label>
+				<label><option id="cb66" value="trace1" onClick="javascript:test(66)"><b>&#128307 Trace C16-3</b></option></label>
+				<label><option id="cb67" value="trace1" onClick="javascript:test(67)"><b>&#128307 Trace C16-4</b></option></label>
+				<label><option id="cb68" value="trace1" onClick="javascript:test(68)"><b>&#128307 Trace C16-5</b></option></label>
+				<label><option id="cb69" value="trace1" onClick="javascript:test(69)"><b>&#128307 Trace C17-1</b></option></label>
+				<label><option id="cb70" value="trace1" onClick="javascript:test(70)"><b>&#128307 Trace C17-2</b></option></label>
+				<label><option id="cb71" value="trace1" onClick="javascript:test(71)"><b>&#128307 Trace C17-3</b></option></label>
+				<label><option id="cb72" value="trace1" onClick="javascript:test(72)"><b>&#128307 Trace C17-4</b></option></label>
+				<label><option id="cb73" value="trace1" onClick="javascript:test(73)"><b>&#128307 Trace C17-5</b></option></label>
+				<label><option id="cb74" value="trace1" onClick="javascript:test(74)"><b>&#128307 Trace C18-1</b></option></label>
+				<label><option id="cb75" value="trace1" onClick="javascript:test(75)"><b>&#128307 Trace C18-2</b></option></label>
+				<label><option id="cb76" value="trace1" onClick="javascript:test(76)"><b>&#128307 Trace C18-3</b></option></label>
+				<label><option id="cb77" value="trace1" onClick="javascript:test(77)"><b>&#128307 Trace C18-4</b></option></label>
+				<label><option id="cb78" value="trace1" onClick="javascript:test(78)"><b>&#128307 Trace C18-5</b></option></label>
+				<label><option id="cb79" value="trace1" onClick="javascript:test(79)"><b>&#128307 Trace C19-1</b></option></label>
+				<label><option id="cb80" value="trace1" onClick="javascript:test(80)"><b>&#128307 Trace C19-2</b></option></label>
+				<label><option id="cb81" value="trace1" onClick="javascript:test(81)"><b>&#128307 Trace C19-3</b></option></label>
+				<label><option id="cb82" value="trace1" onClick="javascript:test(82)"><b>&#128307 Trace C20-1</b></option></label>
+				<label><option id="cb83" value="trace1" onClick="javascript:test(83)"><b>&#128307 Trace C20-2</b></option></label>
+				<label><option id="cb84" value="trace1" onClick="javascript:test(84)"><b>&#128307 Trace C20-3</b></option></label>
+				<label><option id="cb85" value="trace1" onClick="javascript:test(85)"><b>&#128307 Trace C20-4</b></option></label>
+				<label><option id="cb86" value="trace1" onClick="javascript:test(86)"><b>&#128307 Trace C20-5</b></option></label>
+				<label><option id="cb87" value="trace1" onClick="javascript:test(87)"><b>&#128307 Trace N21-1</b></option></label>
+				<label><option id="cb88" value="trace1" onClick="javascript:test(88)"><b>&#128307 Trace N21-2</b></option></label>
+				<label><option id="cb89" value="trace1" onClick="javascript:test(89)"><b>&#128307 Trace N21-3</b></option></label>
+				<label><option id="cb90" value="trace1" onClick="javascript:test(90)"><b>&#128307 Trace N21-4</b></option></label>
+				<label><option id="cb91" value="trace1" onClick="javascript:test(91)"><b>&#128307 Trace N21-5</b></option></label>
+				<label><option id="cb92" value="trace1" onClick="javascript:test(92)"><b>&#128307 Trace N21-6</b></option></label>
+				<label><option id="cb93" value="trace1" onClick="javascript:test(93)"><b>&#128307 Trace N22-1</b></option></label>
+				<label><option id="cb94" value="trace1" onClick="javascript:test(94)"><b>&#128307 Trace N22-2</b></option></label>
+				<label><option id="cb95" value="trace1" onClick="javascript:test(95)"><b>&#128307 Trace N22-3</b></option></label>
+				<label><option id="cb96" value="trace1" onClick="javascript:test(96)"><b>&#128307 Trace N22-4</b></option></label>
+				<label><option id="cb97" value="trace1" onClick="javascript:test(97)"><b>&#128307 Trace N22-5</b></option></label>
+				<label><option id="cb98" value="trace1" onClick="javascript:test(98)"><b>&#128307 Trace N22-6</b></option></label>
+				<label><option id="cb99" value="trace1" onClick="javascript:test(99)"><b>&#128307 Trace N23-1</b></option></label>
+			  <label><option id="cb100" value="trace1" onClick="javascript:test(100)"><b>&#128307 Trace N23-2</b></option></label>
+			  <label><option id="cb101" value="trace1" onClick="javascript:test(101)"><b>&#128307 Trace N23-3</b></option></label>
+			  <label><option id="cb102" value="trace1" onClick="javascript:test(102)"><b>&#128307 Trace N23-4</b></option></label>
+			  <label><option id="cb103" value="trace1" onClick="javascript:test(103)"><b>&#128307 Trace N23-5</b></option></label>
+			  <label><option id="cb104" value="trace1" onClick="javascript:test(104)"><b>&#128307 Trace N23-6</b></option></label>
+			  <label><option id="cb105" value="trace1" onClick="javascript:test(105)"><b>&#128307 Trace N24-1</b></option></label>
+			  <label><option id="cb106" value="trace1" onClick="javascript:test(106)"><b>&#128307 Trace N24-2</b></option></label>
+			  <label><option id="cb107" value="trace1" onClick="javascript:test(107)"><b>&#128307 Trace N24-3</b></option></label>
+			  <label><option id="cb108" value="trace1" onClick="javascript:test(108)"><b>&#128307 Trace N24-4</b></option></label>
+			  <label><option id="cb109" value="trace1" onClick="javascript:test(109)"><b>&#128307 Trace N24-5</b></option></label>
+			  <label><option id="cb110" value="trace1" onClick="javascript:test(110)"><b>&#128307 Trace N24-6</b></option></label>
+			  <label><option id="cb111" value="trace1" onClick="javascript:test(111)"><b>&#128307 Trace N25-1</b></option></label>
+			  <label><option id="cb112" value="trace1" onClick="javascript:test(112)"><b>&#128307 Trace N25-2</b></option></label>
+			  <label><option id="cb113" value="trace1" onClick="javascript:test(113)"><b>&#128307 Trace N25-3</b></option></label>
+			  <label><option id="cb114" value="trace1" onClick="javascript:test(114)"><b>&#128307 Trace N25-4</b></option></label>
+			  <label><option id="cb115" value="trace1" onClick="javascript:test(115)"><b>&#128307 Trace N25-5</b></option></label>
+			  <label><option id="cb116" value="trace1" onClick="javascript:test(116)"><b>&#128307 Trace N25-6</b></option></label>
+			  <label><option id="cb117" value="trace1" onClick="javascript:test(117)"><b>&#128307 Trace N26-1</b></option></label>
+		   	  <label><option id="cb118" value="trace1" onClick="javascript:test(118)"><b>&#128307 Trace N26-2</b></option></label>
+			  <label><option id="cb119" value="trace1" onClick="javascript:test(119)"><b>&#128307 Trace N26-3</b></option></label>
+			  <label><option id="cb120" value="trace1" onClick="javascript:test(120)"><b>&#128307 Trace N26-4</b></option></label>
+			  <label><option id="cb121" value="trace1" onClick="javascript:test(121)"><b>&#128307 Trace N26-5</b></option></label>
+			  <label><option id="cb122" value="trace1" onClick="javascript:test(122)"><b>&#128307 Trace N26-6</b></option></label>
+			  <label><option id="cb123" value="trace1" onClick="javascript:test(123)"><b>&#128307 Trace N27-1</b></option></label>
+			  <label><option id="cb124" value="trace1" onClick="javascript:test(124)"><b>&#128307 Trace N27-2</b></option></label>
+			  <label><option id="cb125" value="trace1" onClick="javascript:test(125)"><b>&#128307 Trace N27-3</b></option></label>
+			  <label><option id="cb126" value="trace1" onClick="javascript:test(126)"><b>&#128307 Trace N27-4</b></option></label>
+			  <label><option id="cb127" value="trace1" onClick="javascript:test(127)"><b>&#128307 Trace N27-5</b></option></label>
+			  <label><option id="cb128" value="trace1" onClick="javascript:test(128)"><b>&#128307 Trace N27-6</b></option></label>
+			  <label><option id="cb129" value="trace1" onClick="javascript:test(129)"><b>&#128307 Trace N28-1</b></option></label>
+			  <label><option id="cb130" value="trace1" onClick="javascript:test(130)"><b>&#128307 Trace N28-2</b></option></label>
+			  <label><option id="cb131" value="trace1" onClick="javascript:test(131)"><b>&#128307 Trace N28-3</b></option></label>
+			  <label><option id="cb132" value="trace1" onClick="javascript:test(132)"><b>&#128307 Trace N28-4</b></option></label>
+			  <label><option id="cb133" value="trace1" onClick="javascript:test(133)"><b>&#128307 Trace N28-5</b></option></label>
+			  <label><option id="cb134" value="trace1" onClick="javascript:test(134)"><b>&#128307 Trace N28-6</b></option></label>
+			  <label><option id="cb135" value="trace1" onClick="javascript:test(135)"><b>&#128307 Trace N29-1</b></option></label>
+			  <label><option id="cb136" value="trace1" onClick="javascript:test(136)"><b>&#128307 Trace N29-2</b></option></label>
+			  <label><option id="cb137" value="trace1" onClick="javascript:test(137)"><b>&#128307 Trace N29-3</b></option></label>
+			  <label><option id="cb138" value="trace1" onClick="javascript:test(138)"><b>&#128307 Trace N29-4</b></option></label>
+			  <label><option id="cb139" value="trace1" onClick="javascript:test(139)"><b>&#128307 Trace N29-5</b></option></label>
+			  <label><option id="cb140" value="trace1" onClick="javascript:test(140)"><b>&#128307 Trace N29-6</b></option></label>
+			  <label><option id="cb141" value="trace1" onClick="javascript:test(141)"><b>&#128307 Trace N30-1</b></option></label>
+			  <label><option id="cb142" value="trace1" onClick="javascript:test(142)"><b>&#128307 Trace N30-2</b></option></label>
+			  <label><option id="cb143" value="trace1" onClick="javascript:test(143)"><b>&#128307 Trace N30-3</b></option></label>
+			  <label><option id="cb144" value="trace1" onClick="javascript:test(144)"><b>&#128307 Trace N30-4</b></option></label>
+			  <label><option id="cb145" value="trace1" onClick="javascript:test(145)"><b>&#128307 Trace N30-5</b></option></label>
+			  <label><option id="cb146" value="trace1" onClick="javascript:test(146)"><b>&#128307 Trace N30-6</b></option></label>                            
+
+							
+			</select>                                                                                   
+			
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Feux tricolores" checked = true onClick="javascript:ft()"> <font size="3">Feux tricolores &nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Stops" checked = true onClick="javascript:st()"> <font size="3">Stops &nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Cassis" checked = true onClick="javascript:da()"> <font size="3">Cassis &nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="checkbox" name="checkbox1" value="Passage pietons" onClick="javascript:pp()"> <font size="3">Passages piétons &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+		
+			<hr width="200" class="style11">
+			<p><b>&nbsp&nbsp Couches rasters</b></p>
+			
+			<form action="">
+				&nbsp&nbsp&nbsp&nbsp <input type="radio" name="maptype" value="1" onClick="javascript:satellite()" checked = true> Images satellites<br><br>
+				&nbsp&nbsp&nbsp&nbsp <input type="radio" name="maptype" value="2" onClick="javascript:roadmap()"> Réseau routier<br><br>
+				&nbsp&nbsp&nbsp&nbsp <input type="radio" name="maptype" value="3" onClick="javascript:terrain()"> Terrain<br><br>
+				&nbsp&nbsp&nbsp&nbsp <input type="radio" name="maptype" value="4" onClick="javascript:hybrid()"> Hybride<br><br>
+			</form>
+			
+			<hr width="200" class="style11">
+			
+			<form action="">
+			
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="radio" name="checkbox2" value="circuit1" checked = true  onClick="javascript:change_circuit(1)"> <font size="3">Circuit I &nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			<p>&nbsp&nbsp&nbsp&nbsp<input type="radio" name="checkbox2" value="circuit2" onClick="javascript:change_circuit(2)"> <font size="3">Circuit II &nbsp&nbsp&nbsp&nbsp&nbsp</font></p>
+			
+			</form>
+			
+			<hr width="200" class="style11">
+			
+			&nbsp&nbsp&nbsp&nbsp  <input type="submit" name="nom" value=" Speed profiles graphics " onclick="open_graph()">
+			
+
+
+		</div>
+		
+		<div id="EmplacementDeMaCarte"></div>
+		<noscript>
+			<p>Attention : </p>
+			<p>Afin de pouvoir utiliser Google Maps, JavaScript doit être activé.</p>
+			<p>Or, il semble que JavaScript est désactivé ou qu'il ne soit pas supporté par votre navigateur.</p>
+			<p>Pour afficher Google Maps, activez JavaScript en modifiant les options de votre navigateur, puis essayez à nouveau.</p>
+		</noscript>
+		
+		
+	</body>
+</html>
