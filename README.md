@@ -15,7 +15,7 @@ Among roc4j main features:
 
 ### Screenshots
 
-![alt text](https://github.com/IGNF/roc4j/blob/master/doc/images/TA-Binom.png "Logo Title Text 1")
+![alt text](https://github.com/IGNF/roc4j/blob/master/doc/images/TA-Binom.png "Logo Title Text 1") ![alt text](https://github.com/IGNF/roc4j/blob/master/doc/images/TA-Binom.png "Logo Title Text 1")
 
 ### Tutorial
 
