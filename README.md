@@ -20,7 +20,7 @@ Among roc4j main features:
 
 <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="5"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoringSpace.png" height="185"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="22"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/oscillo.png" height="185"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="23"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/customized.png" height="185"/>
 
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" height="220"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="21"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" height="230"/> 
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" height="220"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="20"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" height="230"/> 
 
 
 ### Tutorial
