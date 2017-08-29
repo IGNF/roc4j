@@ -25,9 +25,11 @@ Among roc4j main features:
 
 ### Tutorial
 
-A complete tutorial on how to use roc4j may be found at the following address :
+A complete tutorial on how to use roc4j may be found online at the following address:
 
 http://recherche.ign.fr/labos/cogit/demo/roc4j-doc/index.html
+
+Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
 
 ### Installation
 
