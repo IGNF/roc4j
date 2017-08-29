@@ -15,7 +15,9 @@ Among roc4j main features:
 
 ### Screenshots
 
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/TA-Binom.png" width="425"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/TA-Binom.png" width="425"/> 
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/binormalSmoothing.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/ks5.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/bandsNonSmoothed.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/customized.png" width="200"/>
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/bandsNonSmoothed.png" width="200"/>  <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/oscillo.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/errorbars3.png" width="200"/>   <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/smoothing4.png" width="200"/>   
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoringSpace.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" width="200"/> 
 
 ### Tutorial
 
