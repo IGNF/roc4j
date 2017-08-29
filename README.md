@@ -15,9 +15,9 @@ Among roc4j main features:
 
 ### Screenshots
 
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/binormalSmoothing.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/ks5.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/auc.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/customized.png" width="180"/>
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/bandsNonSmoothed.png" width="200"/>  <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/oscillo.png" width="180"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/errorbars3.png" width="200"/>   <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/smoothing4.png" width="200"/>   
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" height="100"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoringSpace.png" height="100"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" height="100"/> 
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/binormalSmoothing.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/ks5.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/auc.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/fixedwidthband.png" width="180"/>
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/bandsNonSmoothed.png" width="200"/>  <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/rainbow.png" width="180"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/errorbars3.png" width="200"/>   <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/smoothing4.png" width="200"/>   
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" height="150"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoringSpace.png" height="140"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" height="150"/> 
 
 ### Tutorial
 
