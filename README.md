@@ -66,4 +66,78 @@ Insert the following lines in your Maven pom.xml:
 </repository>
 ```
 
+### Quick start
+
+```Java
+import java.util.Random;
+import javax.swing.JFrame;
+
+import fr.ign.cogit.RocSpace;
+import fr.ign.cogit.RocSpaceStyle;
+import fr.ign.cogit.ConfidenceBands;
+import fr.ign.cogit.ReceiverOperatingCharacteristics;
+
+//-----------------------------------------------------------------
+// Program to compute a simple ROC curve on n simulates instances
+// Confidence bands is computed at 95% level (default parameter)
+// with Komogorov-Smirnov test statistic. ROC curve and its 
+// associated confidence bands are then depicted in a ROC space 
+//-----------------------------------------------------------------
+
+public class Main {
+
+	public static void main(String[] args) {
+		
+		// --------------------------------------------------------
+		// Parameters
+		// --------------------------------------------------------
+		int n = 500;              // Number of validation instances
+		double noise = 0.1;       // Standard deviation of noise
+		// --------------------------------------------------------
+		
+		// Setting random seed
+		Random generator = new Random(123456789);
+
+		int[] expected = new int[n];
+		double[] score= new double[n];
+
+		// Instances generation
+		for (int i=0; i<n; i++){
+
+		    double rand1 = generator.nextDouble();
+		    double rand2 = generator.nextGaussian();
+
+		    expected[i] = (int)(rand1+0.5);
+		    score[i] = noise*rand2 + 0.2*expected[i] + 0.4;
+
+		    score[i] = Math.max(score[i], 0);
+		    score[i] = Math.min(score[i], 1);
+
+		}
+
+		// Roc curve computation
+		ReceiverOperatingCharacteristics roc = new ReceiverOperatingCharacteristics(expected, score);
+		
+		// Confidence bands computation with Kolmogorov-Smirnov test statistic
+		ConfidenceBands bands = new ConfidenceBands(roc, ConfidenceBands.METHOD_KOLMOGOROV_SMIRNOV);
+		
+		// Creating ROC space
+		RocSpace space = new RocSpace();
+		space.setStyle(RocSpaceStyle.STYLE_OSCILLO);
+
+		space.addRocCurve(roc);		
+		space.addConfidenceBands(bands);
+
+		// Graphical display
+		JFrame fen = new JFrame();
+		fen.setSize(700, 700);
+		fen.setContentPane(space);
+		fen.setLocationRelativeTo(null);
+		fen.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		fen.setVisible(true);
+		
+	}
+
+}
+```
 
