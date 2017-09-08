@@ -22,15 +22,6 @@ Among roc4j main features:
 
 <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/multiple.png" height="220"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/space.png" width="20"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/scoring1.png" height="230"/> 
 
-
-### Tutorial
-
-A complete tutorial on how to use roc4j may be found online at the following address:
-
-http://recherche.ign.fr/labos/cogit/demo/roc4j-doc/index.html
-
-Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
-
 ### Installation
 
 #### Option 1: 
@@ -65,6 +56,15 @@ Insert the following lines in your Maven pom.xml:
 	</releases>
 </repository>
 ```
+
+### Tutorial
+
+A complete tutorial on how to use roc4j may be found online at the following address:
+
+http://recherche.ign.fr/labos/cogit/demo/roc4j-doc/index.html
+
+Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
+
 
 ### Quick start
 
