@@ -78,8 +78,8 @@ import fr.ign.cogit.ConfidenceBands;
 import fr.ign.cogit.ReceiverOperatingCharacteristics;
 
 //-----------------------------------------------------------------
-// Program to compute a simple ROC curve on n simulates instances
-// Confidence bands is computed at 95% level (default parameter)
+// Program to compute a simple ROC curve on n simulated instances
+// Confidence bands are computed at 95% level (default parameter)
 // with Komogorov-Smirnov test statistic. ROC curve and its 
 // associated confidence bands are then depicted in a ROC space 
 //-----------------------------------------------------------------
@@ -118,7 +118,7 @@ public class Main {
 		// Roc curve computation
 		ReceiverOperatingCharacteristics roc = new ReceiverOperatingCharacteristics(expected, score);
 		
-		// Confidence bands computation with Kolmogorov-Smirnov test statistic
+		// Confidence bands computation with Kolmogorov-Smirnov method
 		ConfidenceBands bands = new ConfidenceBands(roc, ConfidenceBands.METHOD_KOLMOGOROV_SMIRNOV);
 		
 		// Creating ROC space
