@@ -68,7 +68,7 @@ Insert the following lines in your Maven pom.xml:
 
 ### Quick start
 
-```Java
+```java
 import java.util.Random;
 import javax.swing.JFrame;
 
