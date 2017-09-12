@@ -14,6 +14,7 @@ Among roc4j main features:
 - Optimal operating points computation
 
 <br>
+
 ### Screenshots
 
 <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/binormalSmoothing.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/ks5.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/auc.png" width="200"/> <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/fixedwidthband.png" width="200"/>
@@ -25,6 +26,7 @@ Among roc4j main features:
 
 <br>
 <br>
+
 ### Installation
 
 #### Option 1: 
@@ -62,6 +64,7 @@ Insert the following lines in your Maven pom.xml:
 
 <br>
 <br>
+
 ### Tutorial
 
 A complete tutorial on how to use roc4j may be found online at the following address:
@@ -72,6 +75,7 @@ Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
 
 <br>
 <br>
+
 ### Quick start
 
 ```java
@@ -150,7 +154,7 @@ public class Main {
 <br>
 <br>
 
-### Real Application - Castle detection from building database
+### Real Application - Castle detection from building database with Random Forest
 
 Authors: Marie-Dominique Van Damme and Yann Méneroux
 
