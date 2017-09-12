@@ -13,6 +13,7 @@
 package fr.ign.cogit;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 
@@ -66,6 +67,58 @@ public class Tools {
 		return Math.sqrt(variance);
 
 	} 
+	
+	// ------------------------------------------------------------
+	// Method for computing rank statistics of a dataset
+	// ------------------------------------------------------------
+	public static double computeQuantile(ArrayList<Double> data, double quantile){
+		
+		// Security tests
+		
+		if (quantile > 1){
+			
+			System.err.println("Error : quantile cannot be greater than 1.0");
+			System.exit(1);
+			
+		}
+		
+		if (quantile < 0){
+			
+			System.err.println("Error : quantile cannot be negative");
+			System.exit(1);
+			
+		}
+		
+		// Convert to array
+		double[] values = new double[data.size()];
+		
+		for (int i=0; i<values.length; i++){
+			
+			values[i] = data.get(i);
+			
+		}
+		
+		// Sort list
+		Arrays.sort(values);
+		
+		if (quantile == 0){
+			
+			return values[0];
+			
+		}
+		
+		if (quantile == 1.0){
+			
+			return values[values.length-1];
+			
+		}
+
+		// Relative quantile
+		int index = (int)(quantile*values.length);
+		
+		return values[index];
+		
+	}
 
 
 	// ------------------------------------------------------------
