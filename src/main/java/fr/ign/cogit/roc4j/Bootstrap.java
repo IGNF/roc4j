@@ -11,11 +11,11 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit;
+package fr.ign.cogit.roc4j;
 
 import java.util.ArrayList;
 
-import fr.ign.cogit.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.ReceiverOperatingCharacteristics;
 
 
 //=================================================================================
