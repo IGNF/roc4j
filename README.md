@@ -429,7 +429,7 @@ Increasing the number of buildings may enable to decrease the uncertainty.
 </p>
 
 <p align="center"> 
-*Receiver Operating Curves (after bootstrap sampling) and 95% confidence bands for Random Forest classifier on castle detection problem*
+<i>Receiver Operating Curves (after bootstrap sampling) and 95% confidence bands for Random Forest classifier on castle detection problem</i>
 </p>
 
 Note that adding some extrinsic parameters (such as distance to the nearest road) enables to reach up to 94% classification performance (AUC). However, in order to get 
