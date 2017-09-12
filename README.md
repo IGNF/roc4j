@@ -155,7 +155,11 @@ public class Main {
 
 ### Real Application - Castle detection from building database with Random Forest
 
+<br>
+
 Authors: Marie-Dominique Van Damme and Yann Méneroux
+
+<br>
 
 The data used for this experimentation may be found on the same github repository:
 
@@ -164,23 +168,39 @@ https://github.com/IGNF/roc4j/blob/master/sample/chateau.dat
 #### Goal:
 
 The objective of this experimentation is to discriminate castle and non-castle in a building database.
-The dataset is an extract of the data we used, containing 600 buildings, 50% of them being castles. The first line 
-of the file contains header with parameters names. First columns contains boolean value (1 if the building described on the row is a castle, 
-0 otherwise). Then each row contains 13 parameters, which have been computed from BDTOPO &copy (IGN building database):
+The dataset is an extract of the data we used, containing 600 buildings, 50% of them being castles. 
+
+The first line of the file contains header with parameter names. First columns contains boolean value (1 if the building described on the row is a castle, 
+0 otherwise). 
+
+Then each row contains 13 parameters, which have been computed from BDTOPO &copy (IGN building database):
 
 1 - hauteur : height (in meters) of the building
+
 2 - nb_orientation_mur : number of wall orientations
+
 3 - orientation_generale : general orientation of building
+
 4 - orientation_principale_mur : main orientation of building walls
+
 5 - elongation : length/width ratio of minimum bounding rectangle
+
 6 - concavite : area of footprints out of convex hull
+
 7 - perimetre : perimeter of footprint
+
 8 - nb_convexe : number of parts in convex decomposition
+
 9 - compacite : compacity index
+
 10 - granularite : smallest building 
+
 11 - nb_concave : number of concave parts
+
 12 - nb_pt_squelette : number of points in geometric skeletton
+
 13 - long_squelette : geometric skeletton length
+
 
 Classification has been done with a Random Forest model (100 trees), using SMILE library.
 
