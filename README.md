@@ -141,10 +141,12 @@ public class Main {
 }
 ```
 
+$~$
+$~$
 
-### Real Application - Castle detection from buildings database
+### Real Application - Castle detection from building database
 
-Authors: Marie-Dominique Van Damme, Yann Méneroux
+Authors: Marie-Dominique Van Damme and Yann Méneroux
 
 ```java
 
