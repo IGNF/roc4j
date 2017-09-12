@@ -165,7 +165,9 @@ The data used for this experimentation may be found on the same github repositor
 
 https://github.com/IGNF/roc4j/blob/master/sample/chateau.dat
 
-#### Goal:
+<br>
+
+#### Goal
 
 The objective of this experimentation is to discriminate castle and non-castle in a building database.
 The dataset is an extract of the data we used, containing 600 buildings, 50% of them being castles. 
@@ -173,7 +175,7 @@ The dataset is an extract of the data we used, containing 600 buildings, 50% of 
 The first line of the file contains header with parameter names. First columns contains boolean value (1 if the building described on the row is a castle, 
 0 otherwise). 
 
-Then each row contains 13 parameters, which have been computed from BDTOPO &copy (IGN building database):
+Each row contains 13 parameters, which have been computed from BDTOPO &copy; (IGN building database):
 
 1 - hauteur : height (in meters) of the building
 
