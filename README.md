@@ -82,10 +82,10 @@ Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
 import java.util.Random;
 import javax.swing.JFrame;
 
-import fr.ign.cogit.RocSpace;
-import fr.ign.cogit.RocSpaceStyle;
-import fr.ign.cogit.ConfidenceBands;
-import fr.ign.cogit.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.RocSpace;
+import fr.ign.cogit.roc4j.RocSpaceStyle;
+import fr.ign.cogit.roc4j.ConfidenceBands;
+import fr.ign.cogit.roc4j.ReceiverOperatingCharacteristics;
 
 //-----------------------------------------------------------------
 // Program to compute a simple ROC curve on n simulated instances
@@ -241,14 +241,14 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import fr.ign.cogit.Bootstrap;
-import fr.ign.cogit.ClassifierModel;
-import fr.ign.cogit.ConfidenceBands;
-import fr.ign.cogit.DataSet;
-import fr.ign.cogit.ReceiverOperatingCharacteristics;
-import fr.ign.cogit.RocSpace;
-import fr.ign.cogit.Tools;
-import fr.ign.cogit.ValidationProcess;
+import fr.ign.cogit.roc4j.Bootstrap;
+import fr.ign.cogit.roc4j.ClassifierModel;
+import fr.ign.cogit.roc4j.ConfidenceBands;
+import fr.ign.cogit.roc4j.DataSet;
+import fr.ign.cogit.roc4j.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.RocSpace;
+import fr.ign.cogit.roc4j.Tools;
+import fr.ign.cogit.roc4j.ValidationProcess;
 
 public class Main {
 
