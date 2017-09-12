@@ -425,7 +425,8 @@ For the default code provided here, we got an AUC equal to 86.2 %. Confidence in
 Increasing the number of buildings may enable to decrease the uncertainty.
 
 <p align="center"> 
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/castle.png" width="700"/>
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/castle.png" width="600"/>
+*Receiver Operating Curves (after bootstrap sampling) and 95% confidence bands for Random Forest classifier on castle detection problem*
 </p>
 
 Note that adding some extrinsic parameters (such as distance to the nearest road) enables to reach up to 94% classification performance (AUC). However, in order to get 
