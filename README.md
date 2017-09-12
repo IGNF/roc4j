@@ -141,8 +141,9 @@ public class Main {
 }
 ```
 
-$~$
-$~$
+"\
+
+"
 
 ### Real Application - Castle detection from building database
 
