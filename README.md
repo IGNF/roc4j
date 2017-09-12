@@ -426,6 +426,9 @@ Increasing the number of buildings may enable to decrease the uncertainty.
 
 <p align="center"> 
 <img src="https://github.com/IGNF/roc4j/blob/master/doc/images/castle.png" width="600"/>
+</p>
+
+<p align="center"> 
 *Receiver Operating Curves (after bootstrap sampling) and 95% confidence bands for Random Forest classifier on castle detection problem*
 </p>
 
