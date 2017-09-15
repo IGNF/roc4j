@@ -105,7 +105,10 @@ public class ConfidenceBands {
 	private Color errorBarsColor = Color.BLACK;
 
 	// Dichotomy iteration number
-	private static double fixedBwSearchIterationNumber = 20;
+	private static double fixedBwSearchIterationNumber = 8;
+	
+	// Dichotomy resolution for FWB method
+	private static double fixedBwSearchResolution = Double.MAX_VALUE;
 
 	// Verbose mode
 	private static boolean verbose = false;
@@ -133,6 +136,7 @@ public class ConfidenceBands {
 
 	public static void setVerbose(boolean bool){verbose = bool;}
 	public static void setfixedBwSearchIterationNumber(int n){fixedBwSearchIterationNumber = n;}
+	public static void setfixedBwSearchResolution(double r){fixedBwSearchResolution = r;}
 
 	public void setErrorBarsModeXY(boolean bool){
 
@@ -794,6 +798,28 @@ public class ConfidenceBands {
 
 			double binf = 0;
 			double bsup = Math.sqrt(TN+TP)/15.0;
+			
+			
+			// ------------------------------------------------------------
+			// Average ROC curve
+			// ------------------------------------------------------------
+
+			for (int i=0; i<resolution; i++){
+
+				ArrayList<Double> datax = new ArrayList<Double>();
+				ArrayList<Double> datay = new ArrayList<Double>();
+
+				for (int j=0; j<rocs.size(); j++){
+
+					datax.add(rocs.get(j).getXRoc()[i]);
+					datay.add(rocs.get(j).getYRoc()[i]);
+
+				}
+
+				XROC[i] = Tools.computeMean(datax);
+				YROC[i] = Tools.computeMean(datay);
+
+			}
 
 			// ----------------------------------------------------------------
 			// Dichotomic search of band-width b
@@ -814,23 +840,6 @@ public class ConfidenceBands {
 				// ------------------------------------------------------------
 
 				for (int i=0; i<resolution; i++){
-
-					ArrayList<Double> datax = new ArrayList<Double>();
-					ArrayList<Double> datay = new ArrayList<Double>();
-
-					// --------------------------------------------------------
-					// Test for each ROC curve
-					// --------------------------------------------------------
-
-					for (int j=0; j<rocs.size(); j++){
-
-						datax.add(rocs.get(j).getXRoc()[i]);
-						datay.add(rocs.get(j).getYRoc()[i]);
-
-					}
-
-					XROC[i] = Tools.computeMean(datax);
-					YROC[i] = Tools.computeMean(datay);
 
 					// Confidence bands trial computation
 
@@ -906,13 +915,18 @@ public class ConfidenceBands {
 				// ROC curve inclusion test
 				// ------------------------------------------------------------
 
-				// For eeach point in ROC space
+				// For each point in ROC space
 
 				for (int i=0; i<rocs.size(); i++){
 
 					// For each ROC curve
+					
+					// Resolution computation
+					int res_roc = (int)(rocs.get(i).resolution/fixedBwSearchResolution);
+					res_roc = Math.min(res_roc, rocs.get(i).resolution);
+					res_roc = Math.max(res_roc, 1);
 
-					for (int j=0; j<rocs.get(i).getXRoc().length; j++){
+					for (int j=0; j<rocs.get(i).getXRoc().length; j+=res_roc){
 
 						double x = rocs.get(i).getXRoc()[j];
 						double y = rocs.get(i).getYRoc()[j];
