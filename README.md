@@ -175,27 +175,35 @@ The first line of the file contains header with parameter names. First columns c
 
 Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN building database):
 
-| Option | Description |
-| ------ | ----------- |
-| 1 - **hauteur** | height of the building |
-| 2 - **nb_orientation_mur** | number of wall orientations  | 
-| 3 - **orientation_generale** | general orientation of building |
-| 4 - **orientation_principale_mur** | main orientation of building walls |
-| 5 - **elongation** | length/width ratio of minimum bounding rectangle |
-| 6 - **concavite** | area of footprints out of convex hull |
-| 7 - **perimetre** | perimeter of footprint |
-| 8 - **nb_convexe** | number of parts in convex decomposition |
-| 9 - **compacite** | compacity index |
-| 10 - **granularite** | shortest wall |
-| 11 - **nb_concave** | number of concave parts |
-| 12 - **nb_pt_squelette** | number of points in geometric skeletton |
-| 13 - **long_squelette** | geometric skeletton length |
-
-<br>
-
-For example :
-
 <img align="right" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="250"/>
+
+<br/>
+
+1 - **hauteur** : height of the building
+
+2 - **nb_orientation_mur** : number of wall orientations
+
+3 - **orientation_generale** : general orientation of building
+
+4 - **orientation_principale_mur** : main orientation of building walls
+
+5 - **elongation** : length/width ratio of minimum bounding rectangle
+
+6 - **concavite** : area of footprints out of convex hull
+
+7 - **perimetre** : perimeter of footprint
+
+8 - **nb_convexe** : number of parts in convex decomposition
+
+9 - **compacite** : compacity index
+
+10 - **granularite** : shortest wall 
+
+11 - **nb_concave** : number of concave parts
+
+12 - **nb_pt_squelette** : number of points in geometric skeletton
+
+13 - **long_squelette** : geometric skeletton length
 
 <br/>
 
