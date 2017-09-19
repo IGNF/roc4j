@@ -28,6 +28,7 @@ Among roc4j main features:
 <br>
 
 ### Installation
+------------------------
 
 #### Option 1: 
 
@@ -53,12 +54,6 @@ Insert the following lines in your Maven pom.xml:
 	<id>cogit-snapshots</id>
 	<name>Cogit Snapshots Repository</name>
 	<url>https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>false</enabled>
-	</releases>
 </repository>
 ```
 
@@ -66,6 +61,7 @@ Insert the following lines in your Maven pom.xml:
 <br>
 
 ### Tutorial
+---------
 
 A complete tutorial on how to use roc4j may be found online at the following address:
 
@@ -77,6 +73,7 @@ Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
 <br>
 
 ### Quick start
+----------
 
 ```java
 import java.util.Random;
@@ -154,6 +151,7 @@ public class Main {
 <br>
 
 ### Real Application - Castle detection from building database with Random Forest
+--------
 
 <br>
 
@@ -204,6 +202,10 @@ Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN
 12 - **nb_pt_squelette** : number of points in geometric skeletton
 
 13 - **long_squelette** : geometric skeletton length
+
+<br />
+
+<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="400"/>
 
 <br>
 
