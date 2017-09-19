@@ -16,6 +16,8 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.omg.CORBA.portable.IndirectionException;
+
 
 //=================================================================================
 // Class for computing confidence bands from a ROC curve
@@ -88,6 +90,9 @@ public class ConfidenceBands {
 	// Instance number computation mode
 	private static int instancesNumberComputationMode = INSTANCE_NUMBER_SUM;
 
+	// Roc curve independence
+	private static boolean rocCurvesIndependent = true;
+
 	// Resampled curves
 	private double[] TPR;
 	private double[] FPR;
@@ -106,7 +111,7 @@ public class ConfidenceBands {
 
 	// Dichotomy iteration number
 	private static double fixedBwSearchIterationNumber = 8;
-	
+
 	// Dichotomy resolution for FWB method
 	private static double fixedBwSearchResolution = Double.MAX_VALUE;
 
@@ -137,6 +142,8 @@ public class ConfidenceBands {
 	public static void setVerbose(boolean bool){verbose = bool;}
 	public static void setfixedBwSearchIterationNumber(int n){fixedBwSearchIterationNumber = n;}
 	public static void setfixedBwSearchResolution(double r){fixedBwSearchResolution = r;}
+
+	public static void setRocCurvesIndependent(boolean bool){rocCurvesIndependent = bool;}
 
 	public void setErrorBarsModeXY(boolean bool){
 
@@ -196,7 +203,6 @@ public class ConfidenceBands {
 	public ReceiverOperatingCharacteristics getCentralROC(){return centralRoc;}
 	public ReceiverOperatingCharacteristics getResampledCentralROC(){return new ReceiverOperatingCharacteristics(FPR, TPR);}
 	public static int getInstancesNumberComputationMode(){return instancesNumberComputationMode;}
-
 
 	public double[] getUpperBandX(){return this.upperband_x;}
 	public double[] getUpperBandY(){return this.upperband_y;}
@@ -317,11 +323,23 @@ public class ConfidenceBands {
 
 	}
 
-
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-5
 	// ---------------------------------------------------------------------------
 	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method, double confidenceLevel, int distribution){
+
+		this(rocs, method, confidenceLevel, DISTRIBUTION_NORMAL, true);
+
+	}
+
+
+	// ---------------------------------------------------------------------------
+	// Main constructor 2-6
+	// ---------------------------------------------------------------------------
+	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method, double confidenceLevel, int distribution, boolean independance){
+
+		boolean save = rocCurvesIndependent;
+		rocCurvesIndependent = independance;
 
 		// Control
 		if ((confidenceLevel >= 100) || (confidenceLevel <= 0)){
@@ -419,6 +437,9 @@ public class ConfidenceBands {
 
 			}
 
+			// Effective size
+			int size_eff = rocCurvesIndependent ? rocs.size() : 1;
+
 			// Interpolation
 
 			ArrayList<Double[]> INTERPOLATED = new ArrayList<Double[]>();
@@ -459,10 +480,10 @@ public class ConfidenceBands {
 				YROC[i] = Tools.computeMean(datay);
 
 				upperband_x[i] = XROC[i];
-				upperband_y[i] = YROC[i] + zValue*Tools.computeStandardDeviation(datay)/Math.sqrt(ROCS.size());
+				upperband_y[i] = YROC[i] + zValue*Tools.computeStandardDeviation(datay)/Math.sqrt(size_eff);
 
 				lowerband_x[i] = XROC[i];
-				lowerband_y[i] = YROC[i] - zValue*Tools.computeStandardDeviation(datay)/Math.sqrt(ROCS.size());
+				lowerband_y[i] = YROC[i] - zValue*Tools.computeStandardDeviation(datay)/Math.sqrt(size_eff);
 
 				// Truncation
 				upperband_y[i] = Math.min(upperband_y[i], 1);
@@ -617,6 +638,9 @@ public class ConfidenceBands {
 
 			}
 
+			// Effective size
+			int size_eff = rocCurvesIndependent ? rocs.size() : 1;
+
 			H = new double[resolution];
 			h = new double[resolution];
 
@@ -638,11 +662,11 @@ public class ConfidenceBands {
 				double sx = Tools.computeStandardDeviation(datax);
 				double sy = Tools.computeStandardDeviation(datay);
 
-				upperband_x[i] = XROC[i] - zValue*sx/Math.sqrt(ROCS.size());
-				upperband_y[i] = YROC[i] + zValue*sy/Math.sqrt(ROCS.size());
+				upperband_x[i] = XROC[i] - zValue*sx/Math.sqrt(size_eff);
+				upperband_y[i] = YROC[i] + zValue*sy/Math.sqrt(size_eff);
 
-				lowerband_x[i] = XROC[i] + zValue*sx/Math.sqrt(ROCS.size());
-				lowerband_y[i] = YROC[i] - zValue*sy/Math.sqrt(ROCS.size());
+				lowerband_x[i] = XROC[i] + zValue*sx/Math.sqrt(size_eff);
+				lowerband_y[i] = YROC[i] - zValue*sy/Math.sqrt(size_eff);
 
 				// Truncation
 				upperband_y[i] = Math.min(upperband_y[i], 1);
@@ -655,8 +679,8 @@ public class ConfidenceBands {
 				lowerband_x[i] = Math.min(lowerband_x[i], 1);
 
 				// Special bars
-				H[i] = zValue*sy/Math.sqrt(ROCS.size());
-				h[i] = zValue*sx/Math.sqrt(ROCS.size());
+				H[i] = zValue*sy/Math.sqrt(size_eff);
+				h[i] = zValue*sx/Math.sqrt(size_eff);
 
 
 			}
@@ -798,8 +822,8 @@ public class ConfidenceBands {
 
 			double binf = 0;
 			double bsup = Math.sqrt(TN+TP)/15.0;
-			
-			
+
+
 			// ------------------------------------------------------------
 			// Average ROC curve
 			// ------------------------------------------------------------
@@ -920,7 +944,7 @@ public class ConfidenceBands {
 				for (int i=0; i<rocs.size(); i++){
 
 					// For each ROC curve
-					
+
 					// Resolution computation
 					int res_roc = (int)(rocs.get(i).resolution/fixedBwSearchResolution);
 					res_roc = Math.min(res_roc, rocs.get(i).resolution);
@@ -1029,7 +1053,7 @@ public class ConfidenceBands {
 				System.exit(1);
 
 			}
-			
+
 			double zv = 1.07;
 
 			// Kolmogorov table
@@ -1039,7 +1063,7 @@ public class ConfidenceBands {
 			if (confidenceLevel > 97.0){zv = 1.63;}
 
 			this.zValue = Tools.kolmogorovSmirnov(confidenceLevel/100.0);
-			
+
 			zv = this.zValue;
 
 			computeInstancesNumber(rocs, instancesNumberComputationMode);
@@ -1056,7 +1080,7 @@ public class ConfidenceBands {
 				System.exit(0);
 
 			}
-			
+
 			// Warning
 			if ((TP <= 30) || (TN <= 30)) {
 
@@ -1145,6 +1169,8 @@ public class ConfidenceBands {
 		getCentralROC().setPositiveInstancesNumber(TP);
 		getCentralROC().setNegativeInstancesNumber(TN);
 
+		rocCurvesIndependent = save;
+
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1166,9 +1192,9 @@ public class ConfidenceBands {
 			AUC.add(ROCS.get(i).computeAUC());
 
 		}
-		
+
 		std = Tools.computeStandardDeviation(AUC);
-		
+
 
 		if (distribution == DISTRIBUTION_BINORMAL){
 
@@ -1179,7 +1205,7 @@ public class ConfidenceBands {
 
 
 		if  (distribution == DISTRIBUTION_STUDENT) {
-			
+
 			return Tools.student(0.5*(1+confidenceLevel/100), ROCS.size())*std/Math.sqrt(ROCS.size());
 
 		}
