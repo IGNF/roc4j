@@ -161,8 +161,6 @@ public class Main {
 
 The data used for this experimentation may be found on the same github repository:
 
-<br>
-
 https://github.com/IGNF/roc4j/blob/master/sample/chateau.dat
 
 <br>
@@ -176,6 +174,8 @@ The first line of the file contains header with parameter names. First columns c
 0 otherwise). 
 
 Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN building database):
+
+<img style="float: right;" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="350"/>
 
 1 - **hauteur** : height of the building
 
@@ -202,10 +202,6 @@ Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN
 12 - **nb_pt_squelette** : number of points in geometric skeletton
 
 13 - **long_squelette** : geometric skeletton length
-
-<br />
-
-<img src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="400"/>
 
 <br>
 
