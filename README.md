@@ -175,11 +175,7 @@ The first line of the file contains header with parameter names. First columns c
 
 Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN building database):
 
-<div>
-
-<span style="float:right;width:100px;"><img src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="100"/></span>
-
-<span style="float:left;">
+<img align="right" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="100"/>
 
 | Option | Description |
 | ------ | ----------- |
@@ -196,10 +192,6 @@ Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN
 | 11 - **nb_concave** | number of concave parts |
 | 12 - **nb_pt_squelette** | number of points in geometric skeletton |
 | 13 - **long_squelette** | geometric skeletton length |
-
-</span>
-
-</div>
 
 <br>
 
