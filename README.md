@@ -175,8 +175,6 @@ The first line of the file contains header with parameter names. First columns c
 
 Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN building database):
 
-<img align="right" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="250"/>
-
 | Option | Description |
 | ------ | ----------- |
 | 1 - **hauteur** | height of the building |
@@ -194,6 +192,12 @@ Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN
 | 13 - **long_squelette** | geometric skeletton length |
 
 <br>
+
+For example :
+
+<img align="right" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="250"/>
+
+<br/>
 
 Classification has been done with a Random Forest model (100 trees), using SMILE library.
 
