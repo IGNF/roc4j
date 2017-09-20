@@ -230,7 +230,7 @@ bootstrap sampling).
 
 ```java
 
-package fr.ign.cogit.jts.graph;
+package <package_name>;
 
 import javax.swing.JFrame;
 
