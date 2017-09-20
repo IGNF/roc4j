@@ -10,10 +10,12 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.validation;
 
 
 import java.util.ArrayList;
+
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
 
 
 // =================================================================================

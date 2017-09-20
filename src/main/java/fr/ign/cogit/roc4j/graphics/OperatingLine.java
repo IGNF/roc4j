@@ -10,7 +10,7 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.graphics;
 
 import java.awt.Color;
 import java.awt.Stroke;

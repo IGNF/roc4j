@@ -10,9 +10,11 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.graphics;
 
 import java.awt.Color;
+
+import fr.ign.cogit.roc4j.utils.Tools;
 
 //=================================================================================
 // Class for storing operating area in the roc space

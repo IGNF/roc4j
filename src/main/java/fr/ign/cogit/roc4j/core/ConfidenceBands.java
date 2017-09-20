@@ -10,13 +10,17 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.core;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.omg.CORBA.portable.IndirectionException;
+import fr.ign.cogit.roc4j.graphics.ColorMap;
+import fr.ign.cogit.roc4j.graphics.OperatingArea;
+import fr.ign.cogit.roc4j.graphics.OperatingLine;
+import fr.ign.cogit.roc4j.graphics.OperatingPoint;
+import fr.ign.cogit.roc4j.utils.Tools;
 
 
 //=================================================================================
@@ -41,12 +45,6 @@ public class ConfidenceBands {
 	public static int DISTRIBUTION_BINORMAL = 2;
 	public static int DISTRIBUTION_BINOMIAL = 3;
 	public static int DISTRIBUTION_STUDENT = 4;
-
-	// Instance number mode
-	public static int INSTANCE_NUMBER_SUM = 1;
-	public static int INSTANCE_NUMBER_AVG  = 2;
-	public static int INSTANCE_NUMBER_MAX = 3;
-	public static int INSTANCE_NUMBER_FST = 4;
 
 	// Bands
 	private double[] upperband_y;
@@ -77,7 +75,7 @@ public class ConfidenceBands {
 	private boolean backgroundFilled = true;
 
 	// ROC data
-	private ArrayList<ReceiverOperatingCharacteristics> ROCS;
+	private RocCurvesCollection ROCS;
 
 	// Instances number
 	private int TP = 0;
@@ -86,12 +84,6 @@ public class ConfidenceBands {
 	// Stroke
 	private int dash_on = 5;
 	private int dash_off = 5; 
-
-	// Instance number computation mode
-	private static int instancesNumberComputationMode = INSTANCE_NUMBER_SUM;
-
-	// Roc curve independence
-	private static boolean rocCurvesIndependent = true;
 
 	// Resampled curves
 	private double[] TPR;
@@ -143,7 +135,6 @@ public class ConfidenceBands {
 	public static void setfixedBwSearchIterationNumber(int n){fixedBwSearchIterationNumber = n;}
 	public static void setfixedBwSearchResolution(double r){fixedBwSearchResolution = r;}
 
-	public static void setRocCurvesIndependent(boolean bool){rocCurvesIndependent = bool;}
 
 	public void setErrorBarsModeXY(boolean bool){
 
@@ -180,8 +171,6 @@ public class ConfidenceBands {
 
 	}
 
-	public static void setInstancesNumberComputationMode(int mode){instancesNumberComputationMode = mode;}
-
 
 	public void setTransparency(float transparency){
 
@@ -202,7 +191,6 @@ public class ConfidenceBands {
 	public int getMethod(){return this.method;}
 	public ReceiverOperatingCharacteristics getCentralROC(){return centralRoc;}
 	public ReceiverOperatingCharacteristics getResampledCentralROC(){return new ReceiverOperatingCharacteristics(FPR, TPR);}
-	public static int getInstancesNumberComputationMode(){return instancesNumberComputationMode;}
 
 	public double[] getUpperBandX(){return this.upperband_x;}
 	public double[] getUpperBandY(){return this.upperband_y;}
@@ -231,9 +219,8 @@ public class ConfidenceBands {
 	public int getDashLength(){return dash_on;}
 	public int getDashInterval(){return dash_off;}
 
-	protected double[] getErrorBarsH(){return H;}
-	protected double[] getErrorBarsh(){return h;}
-
+	public double[] getErrorBarsH(){return H;}
+	public double[] getErrorBarsh(){return h;}
 
 
 	// ---------------------------------------------------------------------------
@@ -278,8 +265,8 @@ public class ConfidenceBands {
 	// Main constructor 1-5
 	// ---------------------------------------------------------------------------
 	public ConfidenceBands(ReceiverOperatingCharacteristics roc, int method, double confidenceLevel, int distribution){
-
-		this(new ArrayList<ReceiverOperatingCharacteristics>(Arrays.asList(roc)), method, confidenceLevel, distribution);
+		
+		this(new RocCurvesCollection(new ArrayList<ReceiverOperatingCharacteristics>(Arrays.asList(roc)), true), method, confidenceLevel, distribution);
 
 	}
 
@@ -287,7 +274,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-1
 	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs){
+	public ConfidenceBands(RocCurvesCollection rocs){
 
 		this(rocs, METHOD_THRESHOLD_AVERAGING, 95.0, DISTRIBUTION_NORMAL);
 
@@ -297,7 +284,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-2
 	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidenceLevel){
+	public ConfidenceBands(RocCurvesCollection rocs, double confidenceLevel){
 
 		this(rocs, METHOD_THRESHOLD_AVERAGING, confidenceLevel, DISTRIBUTION_NORMAL);
 
@@ -307,7 +294,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-3
 	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method){
+	public ConfidenceBands(RocCurvesCollection rocs, int method){
 
 		this(rocs, method, 95.0, DISTRIBUTION_NORMAL);
 
@@ -317,29 +304,18 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-4
 	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method, double confidenceLevel){
+	public ConfidenceBands(RocCurvesCollection rocs, int method, double confidenceLevel){
 
 		this(rocs, method, confidenceLevel, DISTRIBUTION_NORMAL);
 
 	}
 
+
 	// ---------------------------------------------------------------------------
 	// Main constructor 2-5
 	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method, double confidenceLevel, int distribution){
+	public ConfidenceBands(RocCurvesCollection rocs, int method, double confidenceLevel, int distribution){
 
-		this(rocs, method, confidenceLevel, DISTRIBUTION_NORMAL, true);
-
-	}
-
-
-	// ---------------------------------------------------------------------------
-	// Main constructor 2-6
-	// ---------------------------------------------------------------------------
-	public ConfidenceBands(ArrayList<ReceiverOperatingCharacteristics> rocs, int method, double confidenceLevel, int distribution, boolean independance){
-
-		boolean save = rocCurvesIndependent;
-		rocCurvesIndependent = independance;
 
 		// Control
 		if ((confidenceLevel >= 100) || (confidenceLevel <= 0)){
@@ -438,7 +414,7 @@ public class ConfidenceBands {
 			}
 
 			// Effective size
-			int size_eff = rocCurvesIndependent ? rocs.size() : 1;
+			int size_eff = rocs.areRocCurvesStatisticallyIndependent() ? rocs.size() : 1;
 
 			// Interpolation
 
@@ -516,7 +492,7 @@ public class ConfidenceBands {
 
 			}
 
-			computeInstancesNumber(rocs, instancesNumberComputationMode);
+			computeInstancesNumber(rocs);
 
 			if ((TP == 0) || (TN == 0)){
 
@@ -639,7 +615,7 @@ public class ConfidenceBands {
 			}
 
 			// Effective size
-			int size_eff = rocCurvesIndependent ? rocs.size() : 1;
+			int size_eff = rocs.areRocCurvesStatisticallyIndependent() ? rocs.size() : 1;
 
 			H = new double[resolution];
 			h = new double[resolution];
@@ -703,7 +679,7 @@ public class ConfidenceBands {
 
 			}
 
-			computeInstancesNumber(rocs, instancesNumberComputationMode);
+			computeInstancesNumber(rocs);
 
 			if ((TP == 0) || (TN == 0)){
 
@@ -800,7 +776,7 @@ public class ConfidenceBands {
 
 			}
 
-			computeInstancesNumber(rocs, instancesNumberComputationMode);
+			computeInstancesNumber(rocs);
 
 			if ((TP == 0) || (TN == 0)){
 
@@ -1066,7 +1042,7 @@ public class ConfidenceBands {
 
 			zv = this.zValue;
 
-			computeInstancesNumber(rocs, instancesNumberComputationMode);
+			computeInstancesNumber(rocs);
 
 			// Security test
 			if ((TP == 0) || (TN == 0)){
@@ -1154,7 +1130,6 @@ public class ConfidenceBands {
 
 		}
 
-
 		// Resampling confidence bands
 		resample(ROCS.get(0).getResolution());
 
@@ -1168,8 +1143,6 @@ public class ConfidenceBands {
 
 		getCentralROC().setPositiveInstancesNumber(TP);
 		getCentralROC().setNegativeInstancesNumber(TN);
-
-		rocCurvesIndependent = save;
 
 	}
 
@@ -1225,34 +1198,19 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing instances number
 	// ---------------------------------------------------------------------------
-	private void computeInstancesNumber(ArrayList<ReceiverOperatingCharacteristics> ROCS, int method){
+	private void computeInstancesNumber(RocCurvesCollection ROCS){
 
-		if (method == INSTANCE_NUMBER_SUM){
-
+		if (ROCS.areRocCurvesStatisticallyIndependent()){
+			
 			for (int i=0; i<ROCS. size(); i++){
 
 				TP += ROCS.get(i).getPositiveInstancesNumber();
 				TN += ROCS.get(i).getNegativeInstancesNumber();
 
 			}
-
+			
 		}
-
-		if (method == INSTANCE_NUMBER_AVG){
-
-			for (int i=0; i<ROCS. size(); i++){
-
-				TP += ROCS.get(i).getPositiveInstancesNumber();
-				TN += ROCS.get(i).getNegativeInstancesNumber();
-
-			}
-
-			TP /= ROCS.size();
-			TN /= ROCS.size();
-
-		}
-
-		if (method == INSTANCE_NUMBER_MAX){
+		else{
 
 			for (int i=0; i<ROCS. size(); i++){
 
@@ -1266,20 +1224,12 @@ public class ConfidenceBands {
 
 		}
 
-
-		if (method == INSTANCE_NUMBER_FST){
-
-			TP = ROCS.get(0).getPositiveInstancesNumber();
-			TN = ROCS.get(0).getNegativeInstancesNumber();
-
-		}
-
 	}
 
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands isolines
 	// ---------------------------------------------------------------------------
-	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(ArrayList<ReceiverOperatingCharacteristics> rocs){
+	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(RocCurvesCollection rocs){
 
 		return makeConfidenceIsolines(rocs, 1, 99, 1);
 
@@ -1288,7 +1238,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands isolines
 	// ---------------------------------------------------------------------------
-	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step, ColorMap cmap){
+	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step, ColorMap cmap){
 
 		return makeConfidenceIsolines(rocs, confidence_min, confidence_max, confidence_step, ConfidenceBands.METHOD_THRESHOLD_AVERAGING, ConfidenceBands.DISTRIBUTION_BINOMIAL, cmap);
 
@@ -1298,7 +1248,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands isolines
 	// ---------------------------------------------------------------------------
-	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step){
+	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step){
 
 		return makeConfidenceIsolines(rocs, confidence_min, confidence_max, confidence_step, ConfidenceBands.METHOD_THRESHOLD_AVERAGING, ConfidenceBands.DISTRIBUTION_BINOMIAL, ColorMap.TYPE_MATHS);
 
@@ -1307,7 +1257,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands isolines
 	// ---------------------------------------------------------------------------
-	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step, int method, int distribution, ColorMap cmap){
+	public static ArrayList<ConfidenceBands> makeConfidenceIsolines(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step, int method, int distribution, ColorMap cmap){
 
 		ArrayList<ConfidenceBands> BANDS = new ArrayList<ConfidenceBands>();
 
@@ -1330,7 +1280,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands raster
 	// ---------------------------------------------------------------------------
-	public static ArrayList<OperatingArea> makeConfidenceRaster(ArrayList<ReceiverOperatingCharacteristics> rocs){
+	public static ArrayList<OperatingArea> makeConfidenceRaster(RocCurvesCollection rocs){
 
 		return makeConfidenceRaster(rocs, 1, 99, 1);
 
@@ -1339,7 +1289,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands raster
 	// ---------------------------------------------------------------------------
-	public static ArrayList<OperatingArea> makeConfidenceRaster(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step, ColorMap cmap){
+	public static ArrayList<OperatingArea> makeConfidenceRaster(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step, ColorMap cmap){
 
 		return makeConfidenceRaster(rocs, confidence_min, confidence_max, confidence_step, ConfidenceBands.METHOD_THRESHOLD_AVERAGING, ConfidenceBands.DISTRIBUTION_BINORMAL, cmap);
 
@@ -1349,7 +1299,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands raster
 	// ---------------------------------------------------------------------------
-	public static ArrayList<OperatingArea> makeConfidenceRaster(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step){
+	public static ArrayList<OperatingArea> makeConfidenceRaster(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step){
 
 		return makeConfidenceRaster(rocs, confidence_min, confidence_max, confidence_step, ConfidenceBands.METHOD_THRESHOLD_AVERAGING, ConfidenceBands.DISTRIBUTION_BINORMAL, ColorMap.TYPE_MATHS);
 
@@ -1358,7 +1308,7 @@ public class ConfidenceBands {
 	// ---------------------------------------------------------------------------
 	// Method for computing confidence bands raster
 	// ---------------------------------------------------------------------------
-	public static ArrayList<OperatingArea> makeConfidenceRaster(ArrayList<ReceiverOperatingCharacteristics> rocs, double confidence_min, double confidence_max, double confidence_step, int method, int distribution, ColorMap cmap){
+	public static ArrayList<OperatingArea> makeConfidenceRaster(RocCurvesCollection rocs, double confidence_min, double confidence_max, double confidence_step, int method, int distribution, ColorMap cmap){
 
 		ArrayList<OperatingArea> BANDS = new ArrayList<OperatingArea>();
 

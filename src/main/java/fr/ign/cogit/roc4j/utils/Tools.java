@@ -10,7 +10,7 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,57 +67,57 @@ public class Tools {
 		return Math.sqrt(variance);
 
 	} 
-	
+
 	// ------------------------------------------------------------
 	// Method for computing rank statistics of a dataset
 	// ------------------------------------------------------------
 	public static double computeQuantile(ArrayList<Double> data, double quantile){
-		
+
 		// Security tests
-		
+
 		if (quantile > 1){
-			
+
 			System.err.println("Error : quantile cannot be greater than 1.0");
 			System.exit(1);
-			
+
 		}
-		
+
 		if (quantile < 0){
-			
+
 			System.err.println("Error : quantile cannot be negative");
 			System.exit(1);
-			
+
 		}
-		
+
 		// Convert to array
 		double[] values = new double[data.size()];
-		
+
 		for (int i=0; i<values.length; i++){
-			
+
 			values[i] = data.get(i);
-			
+
 		}
-		
+
 		// Sort list
 		Arrays.sort(values);
-		
+
 		if (quantile == 0){
-			
+
 			return values[0];
-			
+
 		}
-		
+
 		if (quantile == 1.0){
-			
+
 			return values[values.length-1];
-			
+
 		}
 
 		// Relative quantile
 		int index = (int)(quantile*values.length);
-		
+
 		return values[index];
-		
+
 	}
 
 
@@ -491,6 +491,40 @@ public class Tools {
 		}
 
 		return 0;
+
+	}
+
+	// ---------------------------------------------------------------------------
+	// Method for computing confidence interval of a set of double values
+	// Confidence level is given in %
+	// ---------------------------------------------------------------------------
+	public static double[] computeConfidenceInterval(ArrayList<Double> values, double level){
+
+		// Security tests
+
+		if (level > 100){
+
+			System.err.println("Error : confidence level cannot be greater than 100");
+			System.exit(1);
+
+		}
+
+		if (level < 0){
+
+			System.err.println("Error : confidence level cannot be negative");
+			System.exit(1);
+
+		}
+
+		double level_inf = (1-level/100.0)/2.0;
+		double level_sup = 1.0-(1-level/100.0)/2.0;
+
+		double[] CI = new double[2];
+
+		CI[0] = Tools.computeQuantile(values, level_inf);
+		CI[1] = Tools.computeQuantile(values, level_sup);
+
+		return CI;
 
 	}
 

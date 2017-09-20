@@ -10,7 +10,7 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.optimization;
 
 // =================================================================================
 // Problem instance context for storing cost of wrong and correct decisions, and 

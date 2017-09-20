@@ -11,11 +11,14 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.validation;
 
 import java.util.ArrayList;
 
-import fr.ign.cogit.roc4j.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.core.RocCurvesCollection;
+import fr.ign.cogit.roc4j.graphics.OperatingPoint;
+import fr.ign.cogit.roc4j.optimization.OptimalLine;
 
 
 //=================================================================================
@@ -28,13 +31,13 @@ public class Bootstrap {
 	// ---------------------------------------------------------------------------
 	// Method for generating a sample of B bootstraps of a ROC curve
 	// ---------------------------------------------------------------------------
-	public static ArrayList<ReceiverOperatingCharacteristics> sample(ReceiverOperatingCharacteristics roc, int B){
+	public static RocCurvesCollection sample(ReceiverOperatingCharacteristics roc, int B){
 
 		// Output bootstraps
 		ArrayList<ReceiverOperatingCharacteristics> ROCS = new ArrayList<ReceiverOperatingCharacteristics>();
 
 		// Security test
-		if (roc.POS_SCORES.length == 1){
+		if (roc.getPositiveScore().length == 1){
 
 			System.err.println("Error : expected and probabilities vector are expected to compute kernel smoothing");
 			System.exit(1);
@@ -42,8 +45,8 @@ public class Bootstrap {
 		}
 
 		// Number of instances
-		int np = roc.POS_SCORES.length;
-		int nn = roc.NEG_SCORES.length;
+		int np = roc.getPositiveScore().length;
+		int nn = roc.getNegativeScore().length;
 		int n = nn + np;
 
 		// Generating score and expected vectors
@@ -55,7 +58,7 @@ public class Bootstrap {
 		for (int i=0; i<nn; i++){
 
 			expected[i] = 0;
-			predicted[i] = roc.NEG_SCORES[i];
+			predicted[i] = roc.getNegativeScore()[i];
 
 		}
 
@@ -63,7 +66,7 @@ public class Bootstrap {
 		for (int i=0; i<np; i++){
 
 			expected[nn+i] = 1;
-			predicted[nn+i] = roc.POS_SCORES[i];
+			predicted[nn+i] = roc.getPositiveScore()[i];
 
 		}
 
@@ -85,31 +88,13 @@ public class Bootstrap {
 			}
 
 			// Generating roc curve with expected and posterior probabilities
-			ROCS.add(new ReceiverOperatingCharacteristics(b_exp, b_pred, roc.resolution));
+			ROCS.add(new ReceiverOperatingCharacteristics(b_exp, b_pred, roc.getResolution()));
 
 		}
 
-		return ROCS;
+		return new RocCurvesCollection(ROCS, false);
 
 	}
-
-	// ---------------------------------------------------------------------------
-	// Method for computing AUC of an array list of roc curves
-	// ---------------------------------------------------------------------------
-	public static ArrayList<Double> computeAreaUnderCurve(ArrayList<ReceiverOperatingCharacteristics> ROCS){
-
-		ArrayList<Double> AUC = new ArrayList<Double>();
-
-		for (int i=0; i<ROCS.size(); i++){
-
-			AUC.add(ROCS.get(i).computeAUC());
-
-		}
-
-		return AUC;
-
-	}
-
 
 	// ---------------------------------------------------------------------------
 	// Method for computing optimal operating point of an array list of roc curves
@@ -127,43 +112,5 @@ public class Bootstrap {
 		return OOP;
 
 	}
-
-
-	// ---------------------------------------------------------------------------
-	// Method for computing confidence interval of a set of double values
-	// Confidence level is given in %
-	// ---------------------------------------------------------------------------
-	public static double[] computeConfidenceInterval(ArrayList<Double> values, double level){
-
-		// Security tests
-
-		if (level > 100){
-
-			System.err.println("Error : confidence level cannot be greater than 100");
-			System.exit(1);
-
-		}
-
-		if (level < 0){
-
-			System.err.println("Error : confidence level cannot be negative");
-			System.exit(1);
-
-		}
-
-		double level_inf = (1-level/100.0)/2.0;
-		double level_sup = 1.0-(1-level/100.0)/2.0;
-
-		double[] CI = new double[2];
-		
-		CI[0] = Tools.computeQuantile(values, level_inf);
-		CI[1] = Tools.computeQuantile(values, level_sup);
-
-		return CI;
-
-	}
-
-
-
 
 }

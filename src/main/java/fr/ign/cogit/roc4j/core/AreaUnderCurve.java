@@ -10,9 +10,13 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.core;
 
 import java.awt.Color;
+
+import fr.ign.cogit.roc4j.graphics.OperatingArea;
+import fr.ign.cogit.roc4j.graphics.OperatingLine;
+import fr.ign.cogit.roc4j.graphics.OperatingPoint;
 
 
 //=================================================================================

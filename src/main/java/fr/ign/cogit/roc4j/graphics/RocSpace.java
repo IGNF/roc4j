@@ -10,7 +10,7 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.graphics;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -35,6 +35,14 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComponent;
+
+import fr.ign.cogit.roc4j.core.AreaUnderCurve;
+import fr.ign.cogit.roc4j.core.ConfidenceBands;
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.core.RocCurvesCollection;
+import fr.ign.cogit.roc4j.optimization.Context;
+import fr.ign.cogit.roc4j.optimization.IsoCostLine;
+import fr.ign.cogit.roc4j.optimization.OptimalLine;
 
 @SuppressWarnings("serial")
 public class RocSpace extends JComponent implements MouseListener, MouseMotionListener {
@@ -299,7 +307,7 @@ public class RocSpace extends JComponent implements MouseListener, MouseMotionLi
 	}
 
 	// Add list of ROC curves to the graphics
-	public void addRocCurve(ArrayList<ReceiverOperatingCharacteristics> rocs){
+	public void addRocCurve(RocCurvesCollection rocs){
 
 		for (int i=0; i<rocs.size(); i++){
 
@@ -1618,7 +1626,7 @@ public class RocSpace extends JComponent implements MouseListener, MouseMotionLi
 	// -----------------------------------------------------------------------------
 	// Method to get SVG text
 	// -----------------------------------------------------------------------------
-	protected String convertToSVGText(int svg_width, int svg_height){
+	public String convertToSVGText(int svg_width, int svg_height){
 
 		String body = "";
 

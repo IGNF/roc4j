@@ -28,6 +28,7 @@ Among roc4j main features:
 <br>
 
 ### Installation
+------------------------
 
 #### Option 1: 
 
@@ -53,12 +54,6 @@ Insert the following lines in your Maven pom.xml:
 	<id>cogit-snapshots</id>
 	<name>Cogit Snapshots Repository</name>
 	<url>https://forge-cogit.ign.fr/nexus/content/repositories/snapshots/</url>
-	<snapshots>
-		<enabled>true</enabled>
-	</snapshots>
-	<releases>
-		<enabled>false</enabled>
-	</releases>
 </repository>
 ```
 
@@ -66,6 +61,7 @@ Insert the following lines in your Maven pom.xml:
 <br>
 
 ### Tutorial
+---------
 
 A complete tutorial on how to use roc4j may be found online at the following address:
 
@@ -77,6 +73,7 @@ Or in PDF version: https://github.com/IGNF/roc4j/blob/master/doc/roc4j-doc.pdf
 <br>
 
 ### Quick start
+----------
 
 ```java
 import java.util.Random;
@@ -154,6 +151,7 @@ public class Main {
 <br>
 
 ### Real Application - Castle detection from building database with Random Forest
+--------
 
 <br>
 
@@ -162,8 +160,6 @@ public class Main {
 <br>
 
 The data used for this experimentation may be found on the same github repository:
-
-<br>
 
 https://github.com/IGNF/roc4j/blob/master/sample/chateau.dat
 
@@ -178,6 +174,10 @@ The first line of the file contains header with parameter names. First columns c
 0 otherwise). 
 
 Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN building database):
+
+<img align="right" src="https://github.com/IGNF/roc4j/blob/master/doc/images/BatiParameters.png" width="350"/>
+
+<br/>
 
 1 - **hauteur** : height of the building
 
@@ -205,7 +205,7 @@ Each row contains 13 parameters, which have been computed from BDTOPO&copy; (IGN
 
 13 - **long_squelette** : geometric skeletton length
 
-<br>
+<br/>
 
 Classification has been done with a Random Forest model (100 trees), using SMILE library.
 
@@ -230,6 +230,8 @@ bootstrap sampling).
 
 ```java
 
+package fr.ign.cogit.jts.graph;
+
 import javax.swing.JFrame;
 
 import smile.classification.RandomForest;
@@ -241,14 +243,15 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import fr.ign.cogit.roc4j.Bootstrap;
-import fr.ign.cogit.roc4j.ClassifierModel;
-import fr.ign.cogit.roc4j.ConfidenceBands;
-import fr.ign.cogit.roc4j.DataSet;
-import fr.ign.cogit.roc4j.ReceiverOperatingCharacteristics;
-import fr.ign.cogit.roc4j.RocSpace;
-import fr.ign.cogit.roc4j.Tools;
-import fr.ign.cogit.roc4j.ValidationProcess;
+import fr.ign.cogit.roc4j.core.ConfidenceBands;
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.core.RocCurvesCollection;
+import fr.ign.cogit.roc4j.graphics.RocSpace;
+import fr.ign.cogit.roc4j.utils.Tools;
+import fr.ign.cogit.roc4j.validation.Bootstrap;
+import fr.ign.cogit.roc4j.validation.ClassifierModel;
+import fr.ign.cogit.roc4j.validation.DataSet;
+import fr.ign.cogit.roc4j.validation.ValidationProcess;
 
 public class Main {
 
@@ -257,10 +260,15 @@ public class Main {
 		// Data labels and features
 		DataSet dataset = new DataSet();
 
-		String datafile_path = "C:/Users/ymeneroux/Desktop/chateau.dat";
+		// Data path in local
+		String datafile_path = "D:/workspace/roc4j/sample/chateau.dat";
 
-		int Nf = 13;   // Number of features (max 13)
-
+		 // Number of features (max 13)
+		int Nf = 13;  
+		
+		// Confidence level
+		double level = 95.0;  
+		
 		// ----------------------------------------------------------------------
 		// Reading building dataset
 		// ----------------------------------------------------------------------
@@ -358,18 +366,14 @@ public class Main {
 		ReceiverOperatingCharacteristics roc = validation.run();
 
 		// Replication of 20 bootstrap samples
-		ArrayList<ReceiverOperatingCharacteristics> ROCS = Bootstrap.sample(roc, 20);
-
-		// Kernel smoothing of curves
-		for (int i=0; i<ROCS.size(); i++){
-
-			ROCS.get(i).smooth(ReceiverOperatingCharacteristics.SMOOTH_KERNEL);
-			ROCS.get(i).setThickness(0.1f);
-
-		}
-
-		// Confidence bands computation at 95% with FWB method
-		ConfidenceBands bands = new ConfidenceBands(ROCS, ConfidenceBands.METHOD_FIXED_WIDTH_BAND, 95.0);
+		RocCurvesCollection ROCS = Bootstrap.sample(roc, 20);
+		
+		// Processing generated curves
+		ROCS.smooth(ReceiverOperatingCharacteristics.SMOOTH_KERNEL);
+		ROCS.setThickness(0.2f);
+			
+		// Confidence bands computation at level % with FWB method
+		ConfidenceBands bands = new ConfidenceBands(ROCS, ConfidenceBands.METHOD_FIXED_WIDTH_BAND, level, 1);
 		bands.getCentralROC().setThickness(2.f);
 		bands.setBordersTransparency(0.5f);
 		
@@ -379,14 +383,15 @@ public class Main {
 		// ----------------------------------------------------------------------
 		
 		// Areas under bootstrapped curves computation
-		ArrayList<Double> AUC = Bootstrap.computeAreaUnderCurve(ROCS);
+		ArrayList<Double> AUC = ROCS.computeAreasUnderCurves();
 		
 		// Average of area under curve
 		double auc = Tools.round(100.0*Tools.computeMean(AUC), 1);
 		
 		// Confidence interval on area under curve
-		double conf_inf = Tools.round(100.0*Tools.computeQuantile(AUC, 0.025), 1);
-		double conf_sup = Tools.round(100.0*Tools.computeQuantile(AUC, 0.975), 1);
+		double[] confidence_interval = Tools.computeConfidenceInterval(AUC, level);
+		double conf_inf = Tools.round(100.0*confidence_interval[0], 1);
+		double conf_sup = Tools.round(100.0*confidence_interval[1], 1);
 		
 
 		// ----------------------------------------------------------------------
@@ -416,7 +421,6 @@ public class Main {
 	}
 
 }
-
 
 ```
 
