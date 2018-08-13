@@ -10,9 +10,11 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.core;
 
 import java.util.ArrayList;
+
+import fr.ign.cogit.roc4j.utils.Tools;
 
 
 // =================================================================================
@@ -150,7 +152,7 @@ class RocCurveSmoother {
 		Kernel kernel_neg = kn.copy();
 
 		// Security test
-		if (roc.POS_SCORES.length == 1){
+		if (roc.getPositiveScore().length == 1){
 
 			System.err.println("Error : expected and probabilities vector are expected to compute kernel smoothing");
 			System.exit(1);
@@ -168,20 +170,20 @@ class RocCurveSmoother {
 			double mx = 0;
 			double mx2 = 0;
 
-			for (int i=0; i<roc.POS_SCORES.length; i++){
+			for (int i=0; i<roc.getPositiveScore().length; i++){
 
-				mx += roc.POS_SCORES[i];
-				mx2 += Math.pow(roc.POS_SCORES[i], 2);
+				mx += roc.getPositiveScore()[i];
+				mx2 += Math.pow(roc.getPositiveScore()[i], 2);
 
 			}
 
-			mx /= (double)(roc.POS_SCORES.length);
-			mx2 /= (double)(roc.POS_SCORES.length);
+			mx /= (double)(roc.getPositiveScore().length);
+			mx2 /= (double)(roc.getPositiveScore().length);
 
 			double sx = Math.sqrt(mx2-Math.pow(mx, 2));
-			sx = Math.sqrt(roc.POS_SCORES.length/(roc.POS_SCORES.length-1))*sx;
+			sx = Math.sqrt(roc.getPositiveScore().length/(roc.getPositiveScore().length-1))*sx;
 
-			kernel_pos.setBandwidth(1.06*sx*Math.pow(roc.POS_SCORES.length, -0.2));
+			kernel_pos.setBandwidth(1.06*sx*Math.pow(roc.getPositiveScore().length, -0.2));
 
 
 		}
@@ -197,20 +199,20 @@ class RocCurveSmoother {
 			double my = 0;
 			double my2 = 0;
 
-			for (int i=0; i<roc.NEG_SCORES.length; i++){
+			for (int i=0; i<roc.getNegativeScore().length; i++){
 
-				my += roc.NEG_SCORES[i];
-				my2 += Math.pow(roc.NEG_SCORES[i], 2);
+				my += roc.getNegativeScore()[i];
+				my2 += Math.pow(roc.getNegativeScore()[i], 2);
 
 			}
 
-			my /= (double)(roc.NEG_SCORES.length);
-			my2 /= (double)(roc.NEG_SCORES.length);
+			my /= (double)(roc.getNegativeScore().length);
+			my2 /= (double)(roc.getNegativeScore().length);
 
 			double sy = Math.sqrt(my2-Math.pow(my, 2));
-			sy = Math.sqrt(roc.NEG_SCORES.length/(roc.NEG_SCORES.length-1))*sy;
+			sy = Math.sqrt(roc.getNegativeScore().length/(roc.getNegativeScore().length-1))*sy;
 
-			kernel_neg.setBandwidth(1.06*sy*Math.pow(roc.NEG_SCORES.length, -0.2));
+			kernel_neg.setBandwidth(1.06*sy*Math.pow(roc.getNegativeScore().length, -0.2));
 
 		}
 
@@ -234,23 +236,23 @@ class RocCurveSmoother {
 			G[i] = 0;
 
 			// Positive instances estimation
-			for (int j=0; j<roc.POS_SCORES.length; j++){
+			for (int j=0; j<roc.getPositiveScore().length; j++){
 
-				G[i] += kernel_pos.cdf((x-roc.POS_SCORES[j])/hp);
+				G[i] += kernel_pos.cdf((x-roc.getPositiveScore()[j])/hp);
 
 
 			}
 
 			// Negative instances estimation
-			for (int j=0; j<roc.NEG_SCORES.length; j++){
+			for (int j=0; j<roc.getNegativeScore().length; j++){
 
-				F[i] += kernel_neg.cdf((x-roc.NEG_SCORES[j])/hn);
+				F[i] += kernel_neg.cdf((x-roc.getNegativeScore()[j])/hn);
 
 			}
 
 			// Normalization
-			G[i] /= roc.POS_SCORES.length;
-			F[i] /= roc.NEG_SCORES.length;
+			G[i] /= roc.getPositiveScore().length;
+			F[i] /= roc.getNegativeScore().length;
 
 		}
 

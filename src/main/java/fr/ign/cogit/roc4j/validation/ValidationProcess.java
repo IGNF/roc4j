@@ -10,10 +10,13 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.validation;
 
 
 import java.util.ArrayList;
+
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.core.RocCurvesCollection;
 
 
 // =================================================================================
@@ -116,13 +119,13 @@ public class ValidationProcess {
 	// --------------------------------------
 	// Validation process for n ROC curves
 	// --------------------------------------
-	public ArrayList<ReceiverOperatingCharacteristics> run(int n){
+	public RocCurvesCollection run(int n){
 		
 		return run(n, false);
 		
 	}
 	
-	public ArrayList<ReceiverOperatingCharacteristics> run(int n, boolean independentSampling){
+	public RocCurvesCollection run(int n, boolean independentSampling){
 
 		boolean verbose_save = verbose;
 
@@ -166,7 +169,7 @@ public class ValidationProcess {
 
 		verbose = verbose_save;
 
-		return ROCS;
+		return new RocCurvesCollection(ROCS, independentSampling);
 
 	}
 

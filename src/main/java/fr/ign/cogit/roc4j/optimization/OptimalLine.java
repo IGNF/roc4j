@@ -10,9 +10,12 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.optimization;
 
 import java.awt.Color;
+
+import fr.ign.cogit.roc4j.core.ReceiverOperatingCharacteristics;
+import fr.ign.cogit.roc4j.graphics.OperatingPoint;
 
 // =================================================================================
 // Class for computing optimal lines in ROC space for a specific problem instance

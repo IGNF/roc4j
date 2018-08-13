@@ -10,7 +10,7 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.core;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -22,6 +22,14 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
+
+import fr.ign.cogit.roc4j.graphics.ColorMap;
+import fr.ign.cogit.roc4j.graphics.OperatingArea;
+import fr.ign.cogit.roc4j.graphics.OperatingLine;
+import fr.ign.cogit.roc4j.graphics.OperatingPoint;
+import fr.ign.cogit.roc4j.graphics.RocSpace;
+import fr.ign.cogit.roc4j.graphics.RocSpaceStyle;
+import fr.ign.cogit.roc4j.optimization.OptimalLine;
 
 
 
@@ -70,8 +78,8 @@ public class ReceiverOperatingCharacteristics {
 	protected double b = Double.NaN;
 
 	// Saving points
-	protected double[] POS_SCORES = {0.0};
-	protected double[] NEG_SCORES = {0.0};
+	private double[] POS_SCORES = {0.0};
+	private double[] NEG_SCORES = {0.0};
 
 	// Smoothing methods
 	public static int SMOOTH_BINORMAL_REGRESSION = 1;
@@ -93,6 +101,9 @@ public class ReceiverOperatingCharacteristics {
 	public int getPositiveInstancesNumber(){return TP;}
 	public int getNegativeInstancesNumber(){return TN;}
 	public ColorMap getColorMap(){return cmap;}
+	
+	public double[] getPositiveScore(){return POS_SCORES;}
+	public double[] getNegativeScore(){return NEG_SCORES;}
 
 	// Setters
 	public void setColor(ColorMap cmap){this.cmap = cmap;}
@@ -557,7 +568,7 @@ public class ReceiverOperatingCharacteristics {
 
 		}
 
-		ArrayList<ReceiverOperatingCharacteristics> ROCS = new ArrayList<ReceiverOperatingCharacteristics>();
+		RocCurvesCollection ROCS = new RocCurvesCollection(new ArrayList<ReceiverOperatingCharacteristics>(), true);
 
 		for (int i=0; i<100; i++){
 
@@ -584,7 +595,7 @@ public class ReceiverOperatingCharacteristics {
 	// ---------------------------------------------------------------------------
 	public static ReceiverOperatingCharacteristics average(ReceiverOperatingCharacteristics... rocs){
 
-		ArrayList<ReceiverOperatingCharacteristics> ROCS = new ArrayList<ReceiverOperatingCharacteristics>();
+		RocCurvesCollection ROCS = new RocCurvesCollection(new ArrayList<ReceiverOperatingCharacteristics>(), true);
 		
 		for (int i=0; i<rocs.length; i++){
 			
@@ -600,7 +611,7 @@ public class ReceiverOperatingCharacteristics {
 	// ---------------------------------------------------------------------------
 	// Method for averaging a list of ROC curves
 	// ---------------------------------------------------------------------------
-	public static ReceiverOperatingCharacteristics average(ArrayList<ReceiverOperatingCharacteristics> ROCS){
+	public static ReceiverOperatingCharacteristics average(RocCurvesCollection ROCS){
 
 		if (ROCS.size() <= 1){
 

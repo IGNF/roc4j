@@ -10,7 +10,9 @@
  * @author Yann Méneroux
  ******************************************************************************/
 
-package fr.ign.cogit.roc4j;
+package fr.ign.cogit.roc4j.core;
+
+import fr.ign.cogit.roc4j.utils.Tools;
 
 
 // =================================================================================
